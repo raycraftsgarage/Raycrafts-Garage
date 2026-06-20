@@ -213,9 +213,9 @@
   .reveal[data-d="3"]{ transition-delay:.24s;} .reveal[data-d="4"]{ transition-delay:.32s;}
 
   /* ——— testimonials ——— */
-  .testi-rail{ display:flex; gap:18px; overflow-x:auto; padding:40px 2px 18px; scroll-snap-type:x mandatory; scrollbar-width:none; }
+  .testi-rail{ display:flex; gap:32px; overflow-x:auto; padding:40px 2px 18px; scroll-snap-type:x mandatory; scrollbar-width:none; }
   .testi-rail::-webkit-scrollbar{ display:none; }
-  @media(min-width:1200px){ .testi-rail{ justify-content:center; } }
+  @media(min-width:1260px){ .testi-rail{ justify-content:center; } }
   .testi{ flex:0 0 auto; width:248px; scroll-snap-align:start; }
   .testi .vid{
     width:100%; aspect-ratio:9/16; border-radius:18px; overflow:hidden; position:relative;
@@ -279,11 +279,27 @@
   .contact-form .btn{ width:100%; padding:14px; font-size:.82rem; }
   @media(max-width:520px){ .field-row{ flex-direction:column; gap:0; } }
 
-  /* booking embed */
-  .booking-embed{ margin-top:42px; padding:14px; min-height:160px; }
-  .booking-embed iframe{ width:100%; min-height:600px; border:none; border-radius:14px; }
-  .booking-placeholder{ display:flex; flex-direction:column; align-items:center; gap:12px; padding:48px 20px; text-align:center; }
-  .booking-placeholder p{ color:var(--ink-dim); font-family:var(--mono); font-size:.78rem; max-width:40ch; }
+  /* contact modal */
+  .cmodal{ position:fixed; inset:0; z-index:130; display:none; align-items:center; justify-content:center; padding:20px; }
+  .cmodal.open{ display:flex; }
+  .cm-backdrop{ position:absolute; inset:0; background:rgba(8,2,3,.82); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+  .cm-panel{ position:relative; z-index:1; width:min(720px, 96vw); max-height:90vh; overflow-y:auto; padding:40px 34px; }
+  .cm-close{ position:absolute; top:16px; right:16px; width:40px; height:40px; border-radius:50%;
+    background:rgba(255,255,255,.08); border:1px solid var(--glass-brd); color:var(--ink); cursor:pointer; font-size:1rem; z-index:2; }
+  .cm-close:hover{ background:rgba(255,255,255,.16); }
+  .cm-title{ font-family:var(--display); font-weight:700; font-size:1.5rem; text-align:center; margin-bottom:26px; }
+  .cm-options{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .cm-opt{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; text-align:left; cursor:pointer;
+    padding:26px 22px; border-radius:18px; background:rgba(255,255,255,.05); border:1px solid var(--glass-brd);
+    color:var(--ink); transition:transform .2s, background .2s, border-color .2s; }
+  .cm-opt:hover{ transform:translateY(-3px); background:var(--accent-soft); border-color:var(--accent); }
+  .cm-opt-t{ font-family:var(--display); font-weight:600; font-size:1.05rem; margin-top:6px; }
+  .cm-opt-s{ font-family:var(--mono); font-size:.7rem; color:var(--ink-dim); }
+  .cm-back{ background:none; border:none; color:var(--ink-dim); font-family:var(--mono); font-size:.74rem; cursor:pointer; margin-bottom:16px; padding:4px 0; }
+  .cm-back:hover{ color:var(--accent); }
+  .cm-cal{ background:#fff; border-radius:16px; overflow:hidden; }
+  .cm-cal iframe{ display:block; width:100%; border:none; }
+  @media(max-width:560px){ .cm-options{ grid-template-columns:1fr; } .cm-panel{ padding:32px 20px; } }
 
   /* cookie banner */
   .cookie{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%) translateY(160%);
@@ -416,7 +432,6 @@
     <div class="nav-links">
       <a href="#stats">Stats</a>
       <a href="#testimonials">Clients</a>
-      <a href="#booking">Book</a>
       <a href="#instagram">Instagram</a>
       <a href="#contact">Contact</a>
     </div>
@@ -442,7 +457,7 @@
           <div class="role reveal" data-d="2"><b>Filmmaker</b> · <b>Editor</b> · <b>Design</b> · <b>Digital Strategy</b></div>
           <div class="hero-cta reveal" data-d="3">
             <button class="btn" onclick="openPortfolio()">Visit Portfolio</button>
-            <a class="btn ghost" href="#contact">Get in touch</a>
+            <button class="btn ghost" onclick="openContact()">Get in touch</button>
           </div>
         </div>
 
@@ -512,36 +527,13 @@
     </section>
 
     <!-- CONTACT -->
-    <!-- BOOKING -->
-    <section id="booking">
-      <div class="container">
-        <div class="sec-label reveal">Let's talk</div>
-        <h2 class="sec-title reveal" data-d="1">Book a call.</h2>
-        <p class="sec-sub reveal" data-d="2">Pick a time that works — it drops straight into my calendar.</p>
-        <div class="booking-embed glass reveal" data-d="2">
-          <!-- Google Calendar Appointment Scheduling begin -->
-          <iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3AxlNqKYl8ccD73Ska-VdVhxw6Yt5hERJS1YWBGiunyR4YOs_92d_d3Mvf_BLuWRs97OJuEhDO?gv=true" style="border:0" width="100%" height="600" frameborder="0"></iframe>
-          <!-- end Google Calendar Appointment Scheduling -->
-        </div>
-      </div>
-    </section>
-
     <!-- CONTACT -->
     <section id="contact">
       <div class="container">
         <div class="contact-card glass reveal">
           <h2>Let's make something<br>worth watching.</h2>
-          <p>For collaborations, bookings or to discuss your next project — drop me a message and I'll get back to you.</p>
-          <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="contact-form">
-            <input type="hidden" name="form-name" value="contact" />
-            <p class="hidden-field"><label>Don't fill this out: <input name="bot-field" /></label></p>
-            <div class="field-row">
-              <input type="text" name="name" placeholder="Your name" required />
-              <input type="email" name="email" placeholder="Your email" required />
-            </div>
-            <textarea name="message" rows="4" placeholder="Tell me about your project…" required></textarea>
-            <button type="submit" class="btn">Send message</button>
-          </form>
+          <p>For collaborations, bookings or to discuss your next project — let's connect.</p>
+          <button class="btn" onclick="openContact()">Get in touch</button>
         </div>
         <footer>
           <div class="foot-row">
@@ -549,7 +541,7 @@
             <div style="display:flex; gap:24px; flex-wrap:wrap;">
               <a href="https://www.instagram.com/imraycraft03/" target="_blank" rel="noopener">Instagram</a>
               <a href="https://www.linkedin.com/in/YOUR-LINKEDIN/" target="_blank" rel="noopener">LinkedIn</a>
-              <a href="mailto:raycrafft@gmail.com">Email</a>
+              <a href="#" onclick="openContact();return false;">Contact</a>
               <a href="#" onclick="openPortfolio();return false;">Portfolio</a>
             </div>
             <div style="font-family:var(--mono); font-size:.7rem; color:var(--ink-dim);">© 2026 Rayyan Ali</div>
@@ -804,8 +796,66 @@
 
   function openPortfolio(){ document.getElementById('portfolio').classList.add('open'); document.body.classList.add('lock'); }
   function closePortfolio(){ document.getElementById('portfolio').classList.remove('open'); document.body.classList.remove('lock'); }
+
+  /* contact modal */
+  function openContact(){ cmShow('choose'); document.getElementById('contactModal').classList.add('open'); document.body.classList.add('lock'); }
+  function closeContact(){ document.getElementById('contactModal').classList.remove('open'); document.body.classList.remove('lock'); }
+  function cmShow(view){
+    ['cmChoose','cmBook','cmMsg'].forEach(id=>document.getElementById(id).hidden = true);
+    document.getElementById(view==='book'?'cmBook':view==='msg'?'cmMsg':'cmChoose').hidden = false;
+  }
+  addEventListener('keydown',e=>{ if(e.key==='Escape') closeContact(); });
   addEventListener('keydown',e=>{ if(e.key==='Escape') closePortfolio(); });
 </script>
+  <!-- CONTACT MODAL -->
+  <div class="cmodal" id="contactModal">
+    <div class="cm-backdrop" onclick="closeContact()"></div>
+    <div class="cm-panel glass" id="cmPanel">
+      <button class="cm-close" onclick="closeContact()" aria-label="Close">✕</button>
+
+      <!-- choose -->
+      <div class="cm-view" id="cmChoose">
+        <h3 class="cm-title">How would you like to connect?</h3>
+        <div class="cm-options">
+          <button class="cm-opt" onclick="cmShow('book')">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+            <span class="cm-opt-t">Book a meeting</span>
+            <span class="cm-opt-s">Grab a time that suits you</span>
+          </button>
+          <button class="cm-opt" onclick="cmShow('msg')">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+            <span class="cm-opt-t">Send a message</span>
+            <span class="cm-opt-s">Tell me about your project</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- book -->
+      <div class="cm-view" id="cmBook" hidden>
+        <button class="cm-back" onclick="cmShow('choose')">‹ Back</button>
+        <div class="cm-cal">
+          <iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3AxlNqKYl8ccD73Ska-VdVhxw6Yt5hERJS1YWBGiunyR4YOs_92d_d3Mvf_BLuWRs97OJuEhDO?gv=true" style="border:0" width="100%" height="620" frameborder="0"></iframe>
+        </div>
+      </div>
+
+      <!-- message -->
+      <div class="cm-view" id="cmMsg" hidden>
+        <button class="cm-back" onclick="cmShow('choose')">‹ Back</button>
+        <h3 class="cm-title">Send a message</h3>
+        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="contact-form">
+          <input type="hidden" name="form-name" value="contact" />
+          <p class="hidden-field"><label>Don't fill this out: <input name="bot-field" /></label></p>
+          <div class="field-row">
+            <input type="text" name="name" placeholder="Your name" required />
+            <input type="email" name="email" placeholder="Your email" required />
+          </div>
+          <textarea name="message" rows="4" placeholder="Tell me about your project…" required></textarea>
+          <button type="submit" class="btn">Send message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- COOKIE CONSENT (gates Google Analytics) -->
   <div class="cookie glass" id="cookieBanner">
     <p>I use cookies to understand how people find and use this site (via Google Analytics). <a href="#" onclick="return false;">Privacy</a></p>
