@@ -164,7 +164,7 @@
   }
 
   /* ——— scroll-reactive background lens (lives behind everything, all sections) ——— */
-  .bg-lens{ position:fixed; top:50%; left:58%; width:74vmin; height:74vmin; transform:translate(-50%,-50%);
+  .bg-lens{ position:fixed; top:50%; left:50%; width:74vmin; height:74vmin; transform:translate(-50%,-50%);
     z-index:0; pointer-events:none; opacity:.16; will-change:transform; }
   @media(max-width:880px){ .bg-lens{ left:50%; opacity:.10; } }
 
@@ -215,6 +215,7 @@
   /* ——— testimonials ——— */
   .testi-rail{ display:flex; gap:18px; overflow-x:auto; padding:40px 2px 18px; scroll-snap-type:x mandatory; scrollbar-width:none; }
   .testi-rail::-webkit-scrollbar{ display:none; }
+  @media(min-width:1200px){ .testi-rail{ justify-content:center; } }
   .testi{ flex:0 0 auto; width:248px; scroll-snap-align:start; }
   .testi .vid{
     width:100%; aspect-ratio:9/16; border-radius:18px; overflow:hidden; position:relative;
@@ -472,7 +473,7 @@
       <div class="container">
         <div class="sec-label reveal">Don't take my word for it</div>
         <h2 class="sec-title reveal" data-d="1">What clients say.</h2>
-        <p class="sec-sub reveal" data-d="2">Vertical video testimonials — swipe through. Replace each tile with your real clips.</p>
+        <p class="sec-sub reveal" data-d="2">Real words from founders and creators I've worked with — tap any to watch.</p>
         <div class="testi-rail" id="testiRail"></div>
       </div>
     </section>
@@ -518,12 +519,9 @@
         <h2 class="sec-title reveal" data-d="1">Book a call.</h2>
         <p class="sec-sub reveal" data-d="2">Pick a time that works — it drops straight into my calendar.</p>
         <div class="booking-embed glass reveal" data-d="2">
-          <!-- ⬇️ PASTE YOUR GOOGLE CALENDAR BOOKING EMBED CODE BETWEEN THESE COMMENTS ⬇️ -->
-          <div class="booking-placeholder">
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
-            <p>Google Calendar booking goes here — paste your embed code in the HTML where marked.</p>
-          </div>
-          <!-- ⬆️ END BOOKING EMBED ⬆️ -->
+          <!-- Google Calendar Appointment Scheduling begin -->
+          <iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3AxlNqKYl8ccD73Ska-VdVhxw6Yt5hERJS1YWBGiunyR4YOs_92d_d3Mvf_BLuWRs97OJuEhDO?gv=true" style="border:0" width="100%" height="600" frameborder="0"></iframe>
+          <!-- end Google Calendar Appointment Scheduling -->
         </div>
       </div>
     </section>
