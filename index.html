@@ -297,6 +297,23 @@
     backdrop-filter:blur(8px); opacity:0; transition:.25s; }
   .pf-item:hover .play{ opacity:1; }
 
+  /* ——— video lightbox ——— */
+  .lightbox{ position:fixed; inset:0; z-index:120; display:none; align-items:center; justify-content:center;
+    background:rgba(8,2,3,.88); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+  .lightbox.open{ display:flex; }
+  .lb-frame{ width:min(92vw, 420px); aspect-ratio:9/16; padding:8px; }
+  .lb-frame iframe{ width:100%; height:100%; border-radius:16px; }
+  .lb-close{ position:absolute; top:24px; right:28px; width:46px; height:46px; border-radius:50%;
+    background:rgba(255,255,255,.08); border:1px solid var(--glass-brd); color:var(--ink); font-size:1.1rem;
+    cursor:pointer; transition:background .2s; }
+  .lb-close:hover{ background:rgba(255,255,255,.16); }
+  .lb-nav{ position:absolute; top:50%; transform:translateY(-50%); width:54px; height:54px; border-radius:50%;
+    background:rgba(255,255,255,.07); border:1px solid var(--glass-brd); color:var(--ink); font-size:1.8rem;
+    line-height:1; cursor:pointer; transition:background .2s, transform .2s; }
+  .lb-nav:hover{ background:var(--accent-soft); }
+  .lb-prev{ left:max(16px, 4vw); } .lb-next{ right:max(16px, 4vw); }
+  @media(max-width:640px){ .lb-nav{ width:42px; height:42px; font-size:1.4rem; } .lb-frame{ width:90vw; } }
+
   @media(prefers-reduced-motion:reduce){
     *{ animation:none !important; transition-duration:.001s !important; }
   }
@@ -464,14 +481,22 @@
         </div>
       </div>
 
-      <div class="toggle glass" id="orientToggle">
-        <button class="active" data-orient="vertical">Vertical</button>
-        <button data-orient="horizontal">Horizontal</button>
-      </div>
-
-      <div class="tabs" id="tabs"></div>
+      <div class="tabs" id="tabs" style="margin-top:34px;"></div>
       <div class="pf-grid vertical" id="pfGrid"></div>
+      <div style="text-align:center; padding-bottom:80px;">
+        <button class="btn ghost" id="loadMoreBtn" onclick="loadMore()">Load more</button>
+      </div>
     </div>
+  </div>
+
+  <!-- VIDEO LIGHTBOX -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" onclick="closeLightbox()">✕</button>
+    <button class="lb-nav lb-prev" onclick="navVideo(-1)">‹</button>
+    <div class="lb-frame glass">
+      <iframe id="lightboxFrame" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen frameborder="0"></iframe>
+    </div>
+    <button class="lb-nav lb-next" onclick="navVideo(1)">›</button>
   </div>
 
 <script>
@@ -565,59 +590,123 @@
     rail.appendChild(el);
   });
 
-  /* ——— PORTFOLIO data + filter logic ——— */
-  const catalog={
-    vertical:{
-      tabs:['All','UGC','Ads','Animation'],
-      items:[
-        {t:'Skincare UGC', c:'UGC'},{t:'Coffee brand ad', c:'Ads'},{t:'Logo sting', c:'Animation'},
-        {t:'Fitness UGC', c:'UGC'},{t:'App promo', c:'Ads'},{t:'Kinetic type', c:'Animation'},
-        {t:'Fashion UGC', c:'UGC'},{t:'Sale campaign', c:'Ads'},{t:'Product loop', c:'Animation'},
-        {t:'Tech unboxing', c:'UGC'},{t:'Launch teaser', c:'Ads'},{t:'Explainer motion', c:'Animation'},
-      ]
-    },
-    horizontal:{
-      tabs:['All','Commercials','Short Films','Music Videos'],
-      items:[
-        {t:'Auto commercial', c:'Commercials'},{t:'Brand film', c:'Short Films'},{t:'Artist MV', c:'Music Videos'},
-        {t:'Restaurant spot', c:'Commercials'},{t:'Documentary cut', c:'Short Films'},{t:'Live session', c:'Music Videos'},
-        {t:'Hotel promo', c:'Commercials'},{t:'Travel film', c:'Short Films'},{t:'Concept MV', c:'Music Videos'},
-      ]
-    }
-  };
+  /* ——— PORTFOLIO: real videos ——— */
+  const videos=[
+    { url:"https://www.youtube.com/watch?v=gpT5MJppCrk", category:"UGC" },
+    { url:"https://youtu.be/EYqC_OaUY28", category:"UGC" },
+    { url:"https://youtu.be/HEL_AtleuUY", category:"UGC" },
+    { url:"https://youtu.be/uAj_4tK7H5k", category:"UGC" },
+    { url:"https://youtu.be/aZn0paf_yRo", category:"UGC" },
+    { url:"https://youtu.be/EMToUzoAtIM", category:"UGC" },
+    { url:"https://youtube.com/shorts/_j5KOgzJKTI?feature=share", category:"UGC" },
 
-  let curOrient='vertical', curTab='All';
+    { url:"https://youtu.be/h8BQiEQU4NQ", category:"Creative Direction" },
+    { url:"https://youtube.com/shorts/RVC_6FWDsPQ?feature=share", category:"Creative Direction" },
+    { url:"https://youtube.com/shorts/EDxfxQj04qk?feature=share", category:"Creative Direction" },
+    { url:"https://youtube.com/shorts/f5QBmmjo9K4?feature=share", category:"Creative Direction" },
+    { url:"https://youtube.com/shorts/m0U4zOIshbY?feature=share", category:"Creative Direction" },
+    { url:"https://youtube.com/shorts/Xls30ksoQzI?feature=share", category:"Creative Direction" },
+    { url:"https://youtu.be/fVNy0XYAzf0", category:"Creative Direction" },
+    { url:"https://youtu.be/dhi8zi94Ed0", category:"Creative Direction" },
+    { url:"https://youtu.be/qpUOZ-xUGQc", category:"Creative Direction" },
+    { url:"https://youtu.be/sHyXtgeTwxQ", category:"Creative Direction" },
+    { url:"https://youtu.be/yc0I__ryxSw", category:"Creative Direction" },
+    { url:"https://youtu.be/ZYKVlHfF7HU", category:"Creative Direction" },
+    { url:"https://youtu.be/XTBA66Axv6k", category:"Creative Direction" },
+    { url:"https://youtu.be/xF6qPObBoFw", category:"Creative Direction" },
+    { url:"https://youtu.be/0Dy8MWbVy-A", category:"Creative Direction" },
+    { url:"https://youtu.be/q75Oy42dJec", category:"Creative Direction" },
+    { url:"https://youtu.be/dt9glVzd2JI", category:"Creative Direction" },
+    { url:"https://youtu.be/tCQJUrWuhWU", category:"Creative Direction" },
+    { url:"https://youtu.be/xBbLvEe9kmY", category:"Creative Direction" },
+    { url:"https://youtu.be/KV62pgu_orU", category:"Creative Direction" },
+    { url:"https://youtu.be/4BZLUlVwMgA", category:"Creative Direction" },
+    { url:"https://youtu.be/bF59oUu7uic", category:"Creative Direction" },
+    { url:"https://youtu.be/oqMQ53YxfWQ", category:"Creative Direction" },
+    { url:"https://youtu.be/feJEAA2kudU", category:"Creative Direction" },
+    { url:"https://youtu.be/T-xrM5Tc_GM", category:"Creative Direction" },
+    { url:"https://youtube.com/shorts/uqcTC-KPe50?feature=share", category:"Creative Direction" },
+    { url:"https://youtube.com/shorts/fKy4RA9pTKY?feature=share", category:"Creative Direction" },
+
+    { url:"https://youtube.com/shorts/XFD4wXm87Iw?feature=share", category:"AI Integration" },
+    { url:"https://youtube.com/shorts/Ltd3awdzVZU?feature=share", category:"AI Integration" },
+
+    { url:"https://youtu.be/FMaeg-9awpA", category:"Fast Paced" },
+    { url:"https://youtu.be/jmAbZUFbJjY", category:"Fast Paced" },
+    { url:"https://youtu.be/jw9d0HuYxOQ", category:"Fast Paced" },
+    { url:"https://youtu.be/TZmD0MfouXQ", category:"Fast Paced" },
+    { url:"https://youtu.be/ak6luceEUcM", category:"Fast Paced" },
+    { url:"https://youtu.be/ooRYigO0qIs", category:"Fast Paced" },
+    { url:"https://youtu.be/ajus4rMdqyo", category:"Fast Paced" },
+    { url:"https://youtu.be/n9lVDpOvwG4", category:"Fast Paced" },
+    { url:"https://youtu.be/x6mWDgi_wmE", category:"Fast Paced" }
+  ];
+
+  function getVideoId(url){
+    if(url.includes("shorts/")) return url.split("shorts/")[1].split("?")[0];
+    if(url.includes("youtu.be/")) return url.split("youtu.be/")[1].split("?")[0];
+    if(url.includes("v=")) return url.split("v=")[1].split("&")[0];
+    return "";
+  }
+  function getThumb(url){ return `https://img.youtube.com/vi/${getVideoId(url)}/hqdefault.jpg`; }
+
+  let curTab='All', visibleCount=12, lbIndex=0, lbList=[];
   const grid=document.getElementById('pfGrid'), tabsEl=document.getElementById('tabs');
 
   function renderTabs(){
+    const cats=['All', ...new Set(videos.map(v=>v.category))];
     tabsEl.innerHTML='';
-    catalog[curOrient].tabs.forEach(tab=>{
-      const b=document.createElement('button'); b.textContent=tab;
-      if(tab===curTab) b.classList.add('active');
-      b.onclick=()=>{ curTab=tab; renderTabs(); renderGrid(); };
+    cats.forEach(cat=>{
+      const b=document.createElement('button'); b.textContent=cat;
+      if(cat===curTab) b.classList.add('active');
+      b.onclick=()=>{ curTab=cat; visibleCount=12; renderTabs(); renderGrid(); };
       tabsEl.appendChild(b);
     });
   }
-  function renderGrid(){
-    grid.className='pf-grid '+curOrient;
-    grid.innerHTML='';
-    catalog[curOrient].items
-      .filter(it=> curTab==='All' || it.c===curTab)
-      .forEach((it,i)=>{
-        const el=document.createElement('div'); el.className='pf-item';
-        el.style.background=grads[i%grads.length];
-        el.innerHTML=`<div class="play"><svg width="18" height="18" viewBox="0 0 24 24" fill="var(--accent-bright)"><path d="M8 5v14l11-7z"/></svg></div>
-          <div class="ov"><div class="t">${it.t}</div><div class="c">${it.c}</div></div>`;
-        grid.appendChild(el);
-      });
+  function filteredVideos(){
+    return curTab==='All' ? videos : videos.filter(v=>v.category===curTab);
   }
-  document.querySelectorAll('#orientToggle button').forEach(b=>{
-    b.onclick=()=>{
-      document.querySelectorAll('#orientToggle button').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      curOrient=b.dataset.orient; curTab='All'; renderTabs(); renderGrid();
-    };
+  function renderGrid(){
+    grid.className='pf-grid vertical';
+    grid.innerHTML='';
+    const list=filteredVideos();
+    lbList=list;
+    list.slice(0,visibleCount).forEach((v,i)=>{
+      const el=document.createElement('div'); el.className='pf-item';
+      el.style.background=`center / cover no-repeat url('${getThumb(v.url)}'), ${grads[i%grads.length]}`;
+      el.innerHTML=`<div class="play"><svg width="18" height="18" viewBox="0 0 24 24" fill="var(--accent-bright)"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="ov"><div class="c">${v.category}</div></div>`;
+      el.onclick=()=>openLightbox(i);
+      grid.appendChild(el);
+    });
+    const btn=document.getElementById('loadMoreBtn');
+    btn.style.display = visibleCount>=list.length ? 'none' : 'inline-block';
+  }
+  function loadMore(){ visibleCount+=12; renderGrid(); }
+  function openLightbox(i){
+    lbIndex=i;
+    const id=getVideoId(lbList[lbIndex].url);
+    document.getElementById('lightboxFrame').src=`https://www.youtube.com/embed/${id}?autoplay=1`;
+    document.getElementById('lightbox').classList.add('open');
+  }
+  function closeLightbox(){
+    document.getElementById('lightbox').classList.remove('open');
+    document.getElementById('lightboxFrame').src='';
+  }
+  function navVideo(dir){
+    lbIndex=(lbIndex+dir+lbList.length)%lbList.length;
+    openLightbox(lbIndex);
+  }
+  document.getElementById('lightbox').addEventListener('click', e=>{
+    if(e.target.id==='lightbox') closeLightbox();
   });
+  addEventListener('keydown', e=>{
+    if(!document.getElementById('lightbox').classList.contains('open')) return;
+    if(e.key==='Escape') closeLightbox();
+    if(e.key==='ArrowRight') navVideo(1);
+    if(e.key==='ArrowLeft') navVideo(-1);
+  });
+
   renderTabs(); renderGrid();
 
   function openPortfolio(){ document.getElementById('portfolio').classList.add('open'); document.body.classList.add('lock'); }
