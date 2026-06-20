@@ -316,6 +316,16 @@
   .foot-row{ display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; }
   .foot-row a{ color:var(--ink-dim); text-decoration:none; font-family:var(--mono); font-size:.74rem; letter-spacing:.06em; }
   .foot-row a:hover{ color:var(--accent); }
+  .foot-legal{ display:flex; gap:22px; flex-wrap:wrap; margin-top:20px; }
+  .foot-legal a{ color:var(--ink-dim); text-decoration:none; font-family:var(--mono); font-size:.68rem; letter-spacing:.05em; }
+  .foot-legal a:hover{ color:var(--accent); }
+  .legal-body{ text-align:left; }
+  .legal-body h3{ font-family:var(--display); font-weight:700; font-size:1.5rem; margin-bottom:6px; }
+  .legal-body .upd{ font-family:var(--mono); font-size:.68rem; color:var(--ink-dim); margin-bottom:22px; }
+  .legal-body h4{ font-family:var(--display); font-weight:600; font-size:1rem; margin:20px 0 8px; }
+  .legal-body p{ color:var(--ink-dim); font-size:.9rem; line-height:1.6; margin-bottom:10px; }
+  .legal-body a{ color:var(--accent); }
+  .legal-body .disclaimer{ font-size:.78rem; font-style:italic; margin-top:22px; padding-top:16px; border-top:1px solid var(--line); }
 
   /* ——— portfolio overlay view ——— */
   .portfolio{
@@ -342,6 +352,22 @@
     padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--ink-dim); cursor:pointer; transition:.2s; }
   .tabs button:hover{ color:var(--ink); border-color:var(--glass-brd); }
   .tabs button.active{ color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+
+  /* orientation toggle */
+  .orient-toggle{ display:flex; gap:14px; margin:34px 0 26px; flex-wrap:wrap; }
+  .orient-btn{ display:flex; align-items:center; gap:12px; cursor:pointer; padding:12px 18px; border-radius:14px;
+    background:rgba(255,255,255,.04); border:1px solid var(--glass-brd); color:var(--ink-dim); transition:.2s; }
+  .orient-btn:hover{ color:var(--ink); border-color:var(--glass-brd); }
+  .orient-btn.active{ color:var(--ink); border-color:var(--accent); background:var(--accent-soft); }
+  .orient-rect{ display:block; border:2px solid currentColor; border-radius:3px; flex:0 0 auto; }
+  .orient-rect.vertical{ width:18px; height:28px; }
+  .orient-rect.horizontal{ width:28px; height:18px; }
+  .orient-txt{ font-family:var(--mono); font-size:.78rem; letter-spacing:.05em; text-transform:uppercase; display:flex; flex-direction:column; line-height:1.25; }
+  .orient-txt em{ font-style:normal; font-size:.66rem; color:var(--accent); }
+  .orient-btn .orient-rect{ color:var(--ink-dim); }
+  .orient-btn.active .orient-rect, .orient-btn:hover .orient-rect{ color:var(--accent); }
+  .pf-empty{ text-align:center; padding:80px 20px 100px; }
+  .pf-empty p{ color:var(--ink-dim); font-family:var(--mono); font-size:.82rem; max-width:44ch; margin:0 auto; }
 
   .pf-grid{ display:grid; gap:16px; padding-bottom:90px; }
   .pf-grid.vertical{ grid-template-columns:repeat(4,1fr); }
@@ -546,6 +572,11 @@
             </div>
             <div style="font-family:var(--mono); font-size:.7rem; color:var(--ink-dim);">© 2026 Rayyan Ali</div>
           </div>
+          <div class="foot-legal">
+            <a href="#" onclick="openLegal('privacy');return false;">Privacy Policy</a>
+            <a href="#" onclick="openLegal('cookies');return false;">Cookie Policy</a>
+            <a href="#" onclick="openLegal('terms');return false;">Terms &amp; Conditions</a>
+          </div>
         </footer>
       </div>
     </section>
@@ -561,8 +592,22 @@
         </div>
       </div>
 
-      <div class="tabs" id="tabs" style="margin-top:34px;"></div>
+      <div class="orient-toggle" id="orientToggle">
+        <button class="orient-btn active" data-orient="vertical" onclick="setOrient('vertical')">
+          <span class="orient-rect vertical"></span>
+          <span class="orient-txt">Vertical <em>9:16</em></span>
+        </button>
+        <button class="orient-btn" data-orient="horizontal" onclick="setOrient('horizontal')">
+          <span class="orient-rect horizontal"></span>
+          <span class="orient-txt">Horizontal <em>16:9</em></span>
+        </button>
+      </div>
+
+      <div class="tabs" id="tabs"></div>
       <div class="pf-grid vertical" id="pfGrid"></div>
+      <div id="pfEmpty" class="pf-empty" hidden>
+        <p>Horizontal work coming soon — landscape films, commercials and music videos are on the way.</p>
+      </div>
       <div style="text-align:center; padding-bottom:80px;">
         <button class="btn ghost" id="loadMoreBtn" onclick="loadMore()">Load more</button>
       </div>
@@ -733,12 +778,26 @@
   function getThumb(url){ return `https://img.youtube.com/vi/${getVideoId(url)}/maxresdefault.jpg`; }
   function getThumbFallback(url){ return `https://img.youtube.com/vi/${getVideoId(url)}/hqdefault.jpg`; }
 
-  let curTab='All', visibleCount=12, lbIndex=0, lbList=[];
-  const grid=document.getElementById('pfGrid'), tabsEl=document.getElementById('tabs');
+  // Horizontal (16:9) videos — add links here later, same format: { url:"...", category:"..." }
+  const videosH=[];
 
+  let curTab='All', curOrient='vertical', visibleCount=12, lbIndex=0, lbList=[];
+  const grid=document.getElementById('pfGrid'), tabsEl=document.getElementById('tabs');
+  const pfEmpty=document.getElementById('pfEmpty'), loadMoreBtn=document.getElementById('loadMoreBtn');
+
+  function activeVideos(){ return curOrient==='horizontal' ? videosH : videos; }
+
+  function setOrient(o){
+    if(o===curOrient) return;
+    curOrient=o; curTab='All'; visibleCount=12;
+    document.querySelectorAll('#orientToggle .orient-btn').forEach(b=>b.classList.toggle('active', b.dataset.orient===o));
+    renderTabs(); renderGrid();
+  }
   function renderTabs(){
-    const cats=['All', ...new Set(videos.map(v=>v.category))];
+    const cats=['All', ...new Set(activeVideos().map(v=>v.category))];
     tabsEl.innerHTML='';
+    // hide tabs if there's nothing yet
+    tabsEl.style.display = activeVideos().length ? 'flex' : 'none';
     cats.forEach(cat=>{
       const b=document.createElement('button'); b.textContent=cat;
       if(cat===curTab) b.classList.add('active');
@@ -747,13 +806,18 @@
     });
   }
   function filteredVideos(){
-    return curTab==='All' ? videos : videos.filter(v=>v.category===curTab);
+    const list=activeVideos();
+    return curTab==='All' ? list : list.filter(v=>v.category===curTab);
   }
   function renderGrid(){
-    grid.className='pf-grid vertical';
+    grid.className='pf-grid '+curOrient;
     grid.innerHTML='';
     const list=filteredVideos();
     lbList=list;
+    // empty state (e.g. horizontal not added yet)
+    const empty = activeVideos().length===0;
+    pfEmpty.hidden = !empty;
+    grid.style.display = empty ? 'none' : 'grid';
     list.slice(0,visibleCount).forEach((v,i)=>{
       const el=document.createElement('div'); el.className='pf-item';
       el.style.background=grads[i%grads.length];
@@ -764,8 +828,7 @@
       el.onclick=()=>openLightbox(i);
       grid.appendChild(el);
     });
-    const btn=document.getElementById('loadMoreBtn');
-    btn.style.display = visibleCount>=list.length ? 'none' : 'inline-block';
+    loadMoreBtn.style.display = (empty || visibleCount>=list.length) ? 'none' : 'inline-block';
   }
   function loadMore(){ visibleCount+=12; renderGrid(); }
   function openLightbox(i){
@@ -805,6 +868,53 @@
     document.getElementById(view==='book'?'cmBook':view==='msg'?'cmMsg':'cmChoose').hidden = false;
   }
   addEventListener('keydown',e=>{ if(e.key==='Escape') closeContact(); });
+
+  /* legal modals */
+  const legalDocs = {
+    privacy: `<h3>Privacy Policy</h3><div class="upd">Last updated: June 2026</div>
+      <p>This site (raycraftsgarage.com) is operated by Rayyan Ali, trading as RayCrafts Garage. This policy explains what personal data is collected and how it is used. Questions? Email <a href="mailto:raycrafft@gmail.com">raycrafft@gmail.com</a>.</p>
+      <h4>What I collect</h4>
+      <p>• Contact form: your name, email address and message, so I can reply to your enquiry.<br>• Bookings: when you book a call, scheduling details are handled by Google Calendar.<br>• Analytics: anonymous usage data (pages viewed, approximate location, how you reached the site) via Google Analytics — only if you accept cookies.</p>
+      <h4>Why I use it</h4>
+      <p>To respond to your messages, schedule meetings, and understand how the site is found and used so I can improve it. I do not sell your data.</p>
+      <h4>Who processes it</h4>
+      <p>Trusted third parties help run this site: Netlify (hosting and form delivery), Google (Analytics and Calendar). Your data is handled under their respective privacy terms.</p>
+      <h4>Your rights</h4>
+      <p>Under UK GDPR you can request access to, correction of, or deletion of your personal data at any time. Email <a href="mailto:raycrafft@gmail.com">raycrafft@gmail.com</a> and I'll action it.</p>
+      <h4>Retention</h4>
+      <p>Enquiry emails are kept only as long as needed to handle your request. Analytics data is retained per Google's standard settings.</p>
+      <p class="disclaimer">This is a general policy provided as a starting template, not legal advice. For commercial or payment activity, consider a professional review.</p>`,
+    cookies: `<h3>Cookie Policy</h3><div class="upd">Last updated: June 2026</div>
+      <p>Cookies are small files stored on your device. This site keeps them to a minimum.</p>
+      <h4>What's used</h4>
+      <p>• Analytics cookies (Google Analytics): help me see how many people visit, where from, and which content is popular. These are <strong>only set if you click "Accept"</strong> on the cookie banner.<br>• No advertising or tracking cookies are used.</p>
+      <h4>Your control</h4>
+      <p>You choose via the cookie banner when you first visit. You can change your mind any time by clearing this site's data in your browser settings, which will show the banner again. Declining analytics does not affect how the site works.</p>
+      <p class="disclaimer">Provided as a starting template, not legal advice.</p>`,
+    terms: `<h3>Terms &amp; Conditions</h3><div class="upd">Last updated: June 2026</div>
+      <p>By using raycraftsgarage.com you agree to these terms.</p>
+      <h4>Content &amp; intellectual property</h4>
+      <p>All videos, designs, graphics and written content on this site are the property of Rayyan Ali / RayCrafts Garage unless stated otherwise, and may not be reused without permission.</p>
+      <h4>Use of the site</h4>
+      <p>The site and its content are provided "as is" for information and portfolio purposes. While I keep things accurate and available, I don't guarantee the site will be uninterrupted or error-free.</p>
+      <h4>Enquiries &amp; bookings</h4>
+      <p>Submitting the contact form or booking a call is an enquiry, not a binding contract. Any project work is governed by a separate agreement made directly between us.</p>
+      <h4>External links</h4>
+      <p>The site links to third-party platforms (e.g. YouTube, Instagram, Google). I'm not responsible for the content or policies of those external sites.</p>
+      <h4>Governing law</h4>
+      <p>These terms are governed by the laws of England &amp; Wales.</p>
+      <p class="disclaimer">Provided as a starting template, not legal advice. Once you take payments, a tailored set of terms is recommended.</p>`
+  };
+  function openLegal(t){
+    document.getElementById('legalBody').innerHTML = legalDocs[t] || '';
+    document.getElementById('legalModal').classList.add('open');
+    document.body.classList.add('lock');
+  }
+  function closeLegal(){
+    document.getElementById('legalModal').classList.remove('open');
+    document.body.classList.remove('lock');
+  }
+  addEventListener('keydown',e=>{ if(e.key==='Escape') closeLegal(); });
   addEventListener('keydown',e=>{ if(e.key==='Escape') closePortfolio(); });
 </script>
   <!-- CONTACT MODAL -->
@@ -856,9 +966,18 @@
     </div>
   </div>
 
+  <!-- LEGAL MODAL -->
+  <div class="cmodal" id="legalModal">
+    <div class="cm-backdrop" onclick="closeLegal()"></div>
+    <div class="cm-panel glass">
+      <button class="cm-close" onclick="closeLegal()" aria-label="Close">✕</button>
+      <div class="legal-body" id="legalBody"></div>
+    </div>
+  </div>
+
   <!-- COOKIE CONSENT (gates Google Analytics) -->
   <div class="cookie glass" id="cookieBanner">
-    <p>I use cookies to understand how people find and use this site (via Google Analytics). <a href="#" onclick="return false;">Privacy</a></p>
+    <p>I use cookies to understand how people find and use this site (via Google Analytics). <a href="#" onclick="openLegal('privacy');return false;">Privacy</a></p>
     <div class="cookie-btns">
       <button class="btn ghost" onclick="cookieChoice(false)">Decline</button>
       <button class="btn" onclick="cookieChoice(true)">Accept</button>
