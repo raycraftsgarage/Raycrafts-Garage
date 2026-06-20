@@ -204,8 +204,9 @@
     width:100%; aspect-ratio:9/16; border-radius:18px; overflow:hidden; position:relative;
     background:linear-gradient(165deg,#3a1012,#160607); display:grid; place-items:center; cursor:pointer;
   }
-  .testi .vid .play{
-    width:54px; height:54px; border-radius:50%; display:grid; place-items:center;
+  .testi .vid img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:opacity .3s; }
+  .testi .vid:hover img{ opacity:.78; }
+  .testi .vid .play{ width:54px; height:54px; border-radius:50%; display:grid; place-items:center; position:relative; z-index:2;
     background:rgba(255,255,255,.1); border:1px solid var(--glass-brd); backdrop-filter:blur(8px);
     transition:transform .25s, background .25s;
   }
@@ -286,6 +287,8 @@
   .pf-item{ position:relative; border-radius:16px; overflow:hidden; cursor:pointer;
     background:linear-gradient(165deg,#371012,#150607); transition:transform .3s; }
   .pf-item:hover{ transform:translateY(-5px); }
+  .pf-item .pf-thumb{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:opacity .3s; }
+  .pf-item:hover .pf-thumb{ opacity:.78; }
   .pf-grid.vertical .pf-item{ aspect-ratio:9/16; }
   .pf-grid.horizontal .pf-item{ aspect-ratio:16/9; }
   .pf-item .ov{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end;
@@ -573,20 +576,22 @@
   for(let i=0;i<9;i++){ const t=document.createElement('i'); t.style.background=grads[i%grads.length]; igTiles.appendChild(t); }
 
   const testimonials=[
-    {nm:'Umer Noman', ro:'Co-Founder, Nova Studios', tag:'01'},
-    {nm:'Alina Hayat', ro:'Co-Founder, Nova Studios', tag:'02'},
-    {nm:'Alice Peter', ro:'Co-Founder, Upstream', tag:'03'},
-    {nm:'Osamah Nasir', ro:'Creator, Pakistan', tag:'04'},
-    {nm:'Your Client', ro:'Add more here', tag:'05'},
+    {id:'YI_Na0q7qkQ', nm:'Umer Noman', ro:'Co-Founder, Nova Studios · Dubai'},
+    {id:'Sl1UbQ_OypQ', nm:'Alina Hayat', ro:'Co-Founder, Nova Studios · Dubai'},
+    {id:'nowYEiFfLNg', nm:'Alice Peter', ro:'Co-Founder, Upstream'},
+    {id:'1L2-2FmYlXU', nm:'Osamah Nasir', ro:'Influencer / Creator · Pakistan'},
   ];
+  const testiList = testimonials.map(t=>({url:`https://youtu.be/${t.id}`, category:'Testimonial'}));
   const rail=document.getElementById('testiRail');
   testimonials.forEach((t,i)=>{
     const el=document.createElement('div'); el.className='testi';
-    el.innerHTML=`<div class="vid" style="background:${grads[i%grads.length]}">
-        <span class="tag">VIDEO · ${t.tag}</span>
+    el.innerHTML=`<div class="vid">
+        <img src="https://img.youtube.com/vi/${t.id}/maxresdefault.jpg" loading="lazy" alt="${t.nm}"
+          onerror="this.onerror=null;this.src='https://img.youtube.com/vi/${t.id}/hqdefault.jpg'">
         <div class="play"><svg width="18" height="18" viewBox="0 0 24 24" fill="var(--accent-bright)"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
       <div class="meta"><div class="nm">${t.nm}</div><div class="ro">${t.ro}</div></div>`;
+    el.querySelector('.vid').onclick=()=>{ lbList=testiList; openLightbox(i); };
     rail.appendChild(el);
   });
 
@@ -648,7 +653,8 @@
     if(url.includes("v=")) return url.split("v=")[1].split("&")[0];
     return "";
   }
-  function getThumb(url){ return `https://img.youtube.com/vi/${getVideoId(url)}/hqdefault.jpg`; }
+  function getThumb(url){ return `https://img.youtube.com/vi/${getVideoId(url)}/maxresdefault.jpg`; }
+  function getThumbFallback(url){ return `https://img.youtube.com/vi/${getVideoId(url)}/hqdefault.jpg`; }
 
   let curTab='All', visibleCount=12, lbIndex=0, lbList=[];
   const grid=document.getElementById('pfGrid'), tabsEl=document.getElementById('tabs');
@@ -673,8 +679,10 @@
     lbList=list;
     list.slice(0,visibleCount).forEach((v,i)=>{
       const el=document.createElement('div'); el.className='pf-item';
-      el.style.background=`center / cover no-repeat url('${getThumb(v.url)}'), ${grads[i%grads.length]}`;
-      el.innerHTML=`<div class="play"><svg width="18" height="18" viewBox="0 0 24 24" fill="var(--accent-bright)"><path d="M8 5v14l11-7z"/></svg></div>
+      el.style.background=grads[i%grads.length];
+      el.innerHTML=`<img class="pf-thumb" src="${getThumb(v.url)}" loading="lazy" alt="${v.category}"
+          onerror="this.onerror=null;this.src='${getThumbFallback(v.url)}'">
+        <div class="play"><svg width="18" height="18" viewBox="0 0 24 24" fill="var(--accent-bright)"><path d="M8 5v14l11-7z"/></svg></div>
         <div class="ov"><div class="c">${v.category}</div></div>`;
       el.onclick=()=>openLightbox(i);
       grid.appendChild(el);
