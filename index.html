@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RayCrafts Garage — Rayyan Ali</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ——— RayCrafts oxblood palette (matched to brand screenshots) ——— */
+    --accent: #C9402E;            /* brick red — interactive / brand pop */
+    --accent-bright: #E0432F;     /* brighter red for play icons */
+    --accent-soft: rgba(201,64,46,.18);
+    --cream: #F2EBD9;             /* warm cream for data/numbers */
+    --bg: #160608;                /* deep oxblood base */
+    --bg-2: #1F0809;
+    --ink: #F6F0E8;
+    --ink-dim: #B89A93;
+    --line: rgba(255,255,255,.09);
+    --glass-bg: rgba(255,255,255,.05);
+    --glass-brd: rgba(255,200,190,.16);
+    --display: "Bricolage Grotesque", sans-serif;
+    --body: "Inter", sans-serif;
+    --mono: "JetBrains Mono", monospace;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:
+      radial-gradient(120% 90% at 78% 18%, #6E1A12 0%, #2E0A0A 38%, #160608 70%),
+      var(--bg);
+    background-attachment:fixed;
+    color:var(--ink); font-family:var(--body);
+    overflow-x:hidden; line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  body.lock{ overflow:hidden; }
+
+  /* ambient moving backdrop + film grain */
+  .ambient{ position:fixed; inset:0; z-index:0; pointer-events:none; }
+  .ambient::before{
+    content:""; position:absolute; inset:-30%;
+    background:
+      radial-gradient(40% 50% at 80% 14%, rgba(224,67,47,.20), transparent 60%),
+      radial-gradient(45% 50% at 15% 30%, rgba(110,26,18,.30), transparent 62%),
+      radial-gradient(55% 60% at 50% 105%, rgba(201,64,46,.12), transparent 60%);
+    animation:drift 22s ease-in-out infinite alternate;
+  }
+  @keyframes drift{ from{ transform:translate3d(0,0,0) scale(1);} to{ transform:translate3d(-3%,2%,0) scale(1.08);} }
+  .grain{
+    position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.5; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  }
+  .vignette{ position:fixed; inset:0; z-index:1; pointer-events:none;
+    box-shadow:inset 0 0 220px 60px rgba(0,0,0,.7); }
+
+  .wrap{ position:relative; z-index:2; }
+  .container{ width:min(1200px, 90vw); margin-inline:auto; }
+
+  /* ——— glass primitive ——— */
+  .glass{
+    position:relative; background:var(--glass-bg);
+    backdrop-filter:blur(22px) saturate(1.5); -webkit-backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--glass-brd); border-radius:22px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.25), 0 24px 60px rgba(0,0,0,.45);
+  }
+  .glass::after{ /* specular sweep */
+    content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:linear-gradient(125deg, rgba(255,255,255,.16), rgba(255,255,255,0) 38%);
+    mix-blend-mode:screen; opacity:.7;
+  }
+
+  /* ——— nav ——— */
+  nav{
+    position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:60;
+    width:min(1160px, 92vw); display:flex; align-items:center; justify-content:space-between;
+    padding:12px 14px 12px 22px; border-radius:18px;
+    background:rgba(28,8,9,.55); backdrop-filter:blur(18px) saturate(1.4);
+    -webkit-backdrop-filter:blur(18px) saturate(1.4); border:1px solid var(--line);
+    transition:transform .4s ease, background .3s;
+  }
+  .brand{ font-family:var(--display); font-weight:800; letter-spacing:.02em; font-size:1.05rem; }
+  .brand b{ color:var(--accent); }
+  .nav-links{ display:flex; gap:26px; }
+  .nav-links a{
+    color:var(--ink-dim); text-decoration:none; font-size:.82rem; font-weight:500;
+    letter-spacing:.04em; text-transform:uppercase; transition:color .2s;
+  }
+  .nav-links a:hover{ color:var(--ink); }
+  .btn{
+    font-family:var(--mono); font-size:.74rem; letter-spacing:.08em; text-transform:uppercase;
+    border:none; cursor:pointer; padding:11px 18px; border-radius:12px; font-weight:700;
+    background:var(--accent); color:#fff; transition:transform .2s, box-shadow .2s, filter .2s;
+    box-shadow:0 8px 24px rgba(201,64,46,.38); text-decoration:none; display:inline-block;
+  }
+  .btn:hover{ transform:translateY(-2px); filter:brightness(1.08); box-shadow:0 12px 30px rgba(201,64,46,.5); }
+  .btn.ghost{ background:transparent; color:var(--ink); border:1px solid var(--glass-brd); box-shadow:none; }
+  .btn.ghost:hover{ background:rgba(255,255,255,.06); }
+
+  @media(max-width:820px){ .nav-links{ display:none; } }
+
+  /* ——— hero (layered: photo sits center-right, behind the copy) ——— */
+  header.hero{ position:relative; min-height:100svh; display:flex; align-items:center; padding:120px 0 60px; overflow:hidden; }
+  .hero-photo{
+    position:absolute; top:0; bottom:0; right:0; width:min(58vw, 760px); z-index:1;
+    background:
+      radial-gradient(80% 70% at 60% 30%, rgba(224,67,47,.30), transparent 60%),
+      linear-gradient(160deg,#3a1014,#180708);
+    display:grid; place-items:center; text-align:center;
+    -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 26%, #000 100%);
+            mask-image:linear-gradient(90deg, transparent 0%, #000 26%, #000 100%);
+  }
+  .hero-photo::after{ /* bottom fade so the figure grounds into the page */
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(to top, var(--bg) 2%, transparent 26%);
+  }
+  .hero-photo .ph{ font-family:var(--mono); font-size:.74rem; color:var(--ink-dim); letter-spacing:.12em; position:relative; z-index:2; }
+  .hero-photo .ph svg{ display:block; margin:0 auto 12px; opacity:.5; }
+
+  .hero-inner{ position:relative; z-index:3; display:grid; grid-template-columns:1.05fr .95fr; gap:40px; align-items:center; width:min(1200px,90vw); margin-inline:auto; }
+  .eyebrow{
+    font-family:var(--mono); font-size:.74rem; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:22px; display:flex; align-items:center; gap:12px;
+  }
+  .eyebrow::before{ content:""; width:34px; height:1px; background:var(--accent); }
+  .hero h1{
+    font-family:var(--display); font-weight:800; line-height:.92; letter-spacing:-.02em;
+    font-size:clamp(3.2rem, 8vw, 6.4rem); margin-bottom:18px;
+    text-shadow:0 6px 40px rgba(0,0,0,.55);
+  }
+  .hero h1 .out{ color:transparent; -webkit-text-stroke:1.4px var(--ink); }
+  .role{ font-family:var(--mono); font-size:.82rem; color:var(--ink-dim); letter-spacing:.05em; margin-bottom:26px; }
+  .role b{ color:var(--ink); font-weight:500; }
+  .hero-cta{ display:flex; gap:14px; flex-wrap:wrap; }
+  .hero-right{ align-self:center; }
+  .hero p.bio{ color:var(--ink); max-width:42ch; font-size:1.02rem; margin-bottom:18px;
+    text-shadow:0 2px 18px rgba(0,0,0,.7); }
+  .hero p.bio.dim{ color:var(--ink-dim); }
+
+  @media(max-width:880px){
+    .hero-inner{ grid-template-columns:1fr; gap:26px; }
+    .hero-photo{ width:100%; opacity:.32;
+      -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 30%, #000 100%);
+              mask-image:linear-gradient(180deg, transparent 0%, #000 30%, #000 100%); }
+    .hero-right{ order:3; }
+  }
+
+  /* ——— scroll-reactive background lens (lives behind everything, all sections) ——— */
+  .bg-lens{ position:fixed; top:50%; left:58%; width:74vmin; height:74vmin; transform:translate(-50%,-50%);
+    z-index:0; pointer-events:none; opacity:.16; will-change:transform; }
+  @media(max-width:880px){ .bg-lens{ left:50%; opacity:.10; } }
+
+  /* reversible shutter bloom (scrubbed by scroll near the IG section) */
+  .shutter-bloom{ position:fixed; top:50%; left:50%; z-index:0; pointer-events:none;
+    width:1px; height:1px; opacity:0; transform:translate(-50%,-50%); will-change:opacity,transform; }
+  .shutter-bloom .ring{ position:absolute; top:50%; left:50%; border-radius:50%;
+    border:1px solid rgba(224,67,47,.45); transform:translate(-50%,-50%); }
+  .shutter-bloom .ring:nth-child(1){ width:38vmin; height:38vmin; }
+  .shutter-bloom .ring:nth-child(2){ width:60vmin; height:60vmin; border-color:rgba(224,67,47,.30); }
+  .shutter-bloom .ring:nth-child(3){ width:84vmin; height:84vmin; border-color:rgba(224,67,47,.18); }
+  .shutter-bloom .ring:nth-child(4){ width:112vmin; height:112vmin; border-color:rgba(224,67,47,.10); }
+  .shutter-bloom .glow{ position:absolute; top:50%; left:50%; width:90vmin; height:90vmin; transform:translate(-50%,-50%);
+    border-radius:50%; background:radial-gradient(circle, rgba(224,67,47,.28), transparent 62%); }
+
+  /* ——— section heads ——— */
+  section{ padding:96px 0; position:relative; }
+  .sec-label{
+    font-family:var(--mono); font-size:.74rem; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:14px;
+  }
+  .sec-title{
+    font-family:var(--display); font-weight:700; letter-spacing:-.02em;
+    font-size:clamp(2rem,5vw,3.4rem); line-height:1; margin-bottom:14px;
+  }
+  .sec-sub{ color:var(--ink-dim); max-width:54ch; }
+
+  /* ——— stats ——— */
+  .stats-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:48px; }
+  .stat{ padding:30px 26px; }
+  .stat .num{
+    font-family:var(--display); font-weight:800; font-size:clamp(2.4rem,4.4vw,3.4rem);
+    line-height:1; letter-spacing:-.02em; color:var(--cream); font-variant-numeric:tabular-nums;
+  }
+  .stat .num .unit{ color:var(--accent); }
+  .stat .lab{
+    font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--ink-dim); margin-top:14px;
+  }
+  @media(max-width:880px){ .stats-grid{ grid-template-columns:repeat(2,1fr);} }
+
+  /* ——— reveal ——— */
+  .reveal{ opacity:0; transform:translateY(26px); transition:opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in{ opacity:1; transform:none; }
+  .reveal[data-d="1"]{ transition-delay:.08s;} .reveal[data-d="2"]{ transition-delay:.16s;}
+  .reveal[data-d="3"]{ transition-delay:.24s;} .reveal[data-d="4"]{ transition-delay:.32s;}
+
+  /* ——— testimonials ——— */
+  .testi-rail{ display:flex; gap:18px; overflow-x:auto; padding:40px 2px 18px; scroll-snap-type:x mandatory; scrollbar-width:none; }
+  .testi-rail::-webkit-scrollbar{ display:none; }
+  .testi{ flex:0 0 auto; width:248px; scroll-snap-align:start; }
+  .testi .vid{
+    width:100%; aspect-ratio:9/16; border-radius:18px; overflow:hidden; position:relative;
+    background:linear-gradient(165deg,#3a1012,#160607); display:grid; place-items:center; cursor:pointer;
+  }
+  .testi .vid .play{
+    width:54px; height:54px; border-radius:50%; display:grid; place-items:center;
+    background:rgba(255,255,255,.1); border:1px solid var(--glass-brd); backdrop-filter:blur(8px);
+    transition:transform .25s, background .25s;
+  }
+  .testi .vid:hover .play{ transform:scale(1.12); background:var(--accent-soft); }
+  .testi .vid .tag{ position:absolute; top:12px; left:12px; font-family:var(--mono); font-size:.62rem;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--ink-dim); }
+  .testi .meta{ margin-top:14px; }
+  .testi .meta .nm{ font-family:var(--display); font-weight:600; font-size:1rem; }
+  .testi .meta .ro{ font-family:var(--mono); font-size:.68rem; color:var(--ink-dim); margin-top:3px; letter-spacing:.04em; }
+
+  /* ——— instagram phone scroll-in ——— */
+  .ig{ position:relative; overflow:hidden; }
+  .ig-grid{ display:grid; grid-template-columns:1fr 360px; gap:60px; align-items:center; }
+  .phone{
+    position:relative; width:300px; aspect-ratio:9/19; border-radius:42px; padding:12px;
+    background:linear-gradient(160deg,#2a1014,#140607);
+    border:1px solid var(--glass-brd);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 40px 90px rgba(0,0,0,.6);
+    will-change:transform; justify-self:center;
+  }
+  .phone-screen{ width:100%; height:100%; border-radius:32px; overflow:hidden; background:#0b0c10; }
+  .ig-top{ padding:16px 14px 10px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--line); }
+  .ig-dp{ width:42px; height:42px; border-radius:50%; background:conic-gradient(from 0deg,var(--accent),#ff7a59,#5b78ff,var(--accent)); padding:2px; }
+  .ig-dp i{ display:block; width:100%; height:100%; border-radius:50%; background:#1a1d26; }
+  .ig-top .h{ font-weight:600; font-size:.86rem; }
+  .ig-top .s{ font-family:var(--mono); font-size:.6rem; color:var(--ink-dim); }
+  .ig-nums{ display:flex; gap:16px; padding:12px 14px; }
+  .ig-nums div{ text-align:center; }
+  .ig-nums b{ display:block; font-family:var(--display); font-weight:700; font-size:.95rem; }
+  .ig-nums span{ font-family:var(--mono); font-size:.56rem; color:var(--ink-dim); letter-spacing:.04em; }
+  .ig-tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:3px; padding:3px; }
+  .ig-tiles i{ aspect-ratio:1; display:block; border-radius:3px; }
+
+  @media(max-width:880px){ .ig-grid{ grid-template-columns:1fr; gap:40px; } }
+
+  /* ——— contact ——— */
+  .contact-card{ padding:56px 48px; text-align:center; }
+  .contact-card h2{ font-family:var(--display); font-weight:800; font-size:clamp(2rem,5vw,3.2rem); letter-spacing:-.02em; margin-bottom:14px; }
+  .contact-card p{ color:var(--ink-dim); max-width:46ch; margin:0 auto 30px; }
+
+  footer{ padding:40px 0 60px; border-top:1px solid var(--line); margin-top:40px; }
+  .foot-row{ display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; }
+  .foot-row a{ color:var(--ink-dim); text-decoration:none; font-family:var(--mono); font-size:.74rem; letter-spacing:.06em; }
+  .foot-row a:hover{ color:var(--accent); }
+
+  /* ——— portfolio overlay view ——— */
+  .portfolio{
+    position:fixed; inset:0; z-index:80;
+    background:radial-gradient(120% 90% at 78% 8%, #5a160F 0%, #2A0909 40%, #160608 72%), var(--bg);
+    overflow-y:auto; transform:translateY(100%); transition:transform .55s cubic-bezier(.2,.8,.2,1);
+  }
+  .portfolio.open{ transform:none; }
+  .pf-head{ position:sticky; top:0; z-index:5; padding:18px 0; background:rgba(22,6,8,.75);
+    backdrop-filter:blur(20px); border-bottom:1px solid var(--line); }
+  .pf-head .row{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  .pf-head h3{ font-family:var(--display); font-weight:800; font-size:1.3rem; }
+  .pf-close{ background:none; border:1px solid var(--glass-brd); color:var(--ink); width:42px; height:42px;
+    border-radius:12px; cursor:pointer; font-size:1.1rem; transition:background .2s; }
+  .pf-close:hover{ background:rgba(255,255,255,.07); }
+
+  .toggle{ display:inline-flex; padding:5px; gap:4px; border-radius:14px; margin:34px 0 22px; }
+  .toggle button{ font-family:var(--mono); font-size:.74rem; letter-spacing:.08em; text-transform:uppercase;
+    padding:10px 20px; border-radius:10px; border:none; background:transparent; color:var(--ink-dim); cursor:pointer; transition:.2s; }
+  .toggle button.active{ background:var(--accent); color:#fff; font-weight:700; }
+
+  .tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:34px; }
+  .tabs button{ font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+    padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--ink-dim); cursor:pointer; transition:.2s; }
+  .tabs button:hover{ color:var(--ink); border-color:var(--glass-brd); }
+  .tabs button.active{ color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+
+  .pf-grid{ display:grid; gap:16px; padding-bottom:90px; }
+  .pf-grid.vertical{ grid-template-columns:repeat(4,1fr); }
+  .pf-grid.horizontal{ grid-template-columns:repeat(3,1fr); }
+  @media(max-width:980px){ .pf-grid.vertical{ grid-template-columns:repeat(3,1fr);} .pf-grid.horizontal{ grid-template-columns:repeat(2,1fr);} }
+  @media(max-width:640px){ .pf-grid.vertical{ grid-template-columns:repeat(2,1fr);} .pf-grid.horizontal{ grid-template-columns:1fr;} }
+
+  .pf-item{ position:relative; border-radius:16px; overflow:hidden; cursor:pointer;
+    background:linear-gradient(165deg,#371012,#150607); transition:transform .3s; }
+  .pf-item:hover{ transform:translateY(-5px); }
+  .pf-grid.vertical .pf-item{ aspect-ratio:9/16; }
+  .pf-grid.horizontal .pf-item{ aspect-ratio:16/9; }
+  .pf-item .ov{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end;
+    padding:16px; background:linear-gradient(to top, rgba(0,0,0,.75), transparent 55%); }
+  .pf-item .ov .t{ font-family:var(--display); font-weight:600; font-size:.95rem; }
+  .pf-item .ov .c{ font-family:var(--mono); font-size:.62rem; color:var(--accent); letter-spacing:.08em; text-transform:uppercase; margin-top:3px; }
+  .pf-item .play{ position:absolute; inset:0; margin:auto; width:50px; height:50px; border-radius:50%;
+    display:grid; place-items:center; background:rgba(255,255,255,.1); border:1px solid var(--glass-brd);
+    backdrop-filter:blur(8px); opacity:0; transition:.25s; }
+  .pf-item:hover .play{ opacity:1; }
+
+  @media(prefers-reduced-motion:reduce){
+    *{ animation:none !important; transition-duration:.001s !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="ambient"></div>
+
+  <!-- scroll-reactive aperture lens: rotates + breathes open/closed the whole way down -->
+  <svg class="bg-lens" id="bgLens" viewBox="0 0 200 200" fill="none" stroke="var(--accent)" stroke-width="1">
+    <circle cx="100" cy="100" r="95" stroke-opacity=".45"/>
+    <circle cx="100" cy="100" r="80" stroke-opacity=".28"/>
+    <g stroke="var(--ink)" stroke-opacity=".16" stroke-width="1.4">
+      <line x1="100" y1="2"  x2="100" y2="14"/><line x1="100" y1="186" x2="100" y2="198"/>
+      <line x1="2" y1="100"  x2="14" y2="100"/><line x1="186" y1="100" x2="198" y2="100"/>
+      <line x1="30" y1="30"  x2="40" y2="40"/><line x1="170" y1="30" x2="160" y2="40"/>
+      <line x1="30" y1="170" x2="40" y2="160"/><line x1="170" y1="170" x2="160" y2="160"/>
+    </g>
+    <g id="iris" stroke="var(--accent)" stroke-opacity=".75" fill="rgba(201,64,46,.06)">
+      <path d="M100 34 L132 72 L100 100Z"/><path d="M166 100 L128 132 L100 100Z"/>
+      <path d="M100 166 L68 128 L100 100Z"/><path d="M34 100 L72 68 L100 100Z"/>
+      <path d="M148 52 L150 96 L100 100Z"/><path d="M148 148 L104 150 L100 100Z"/>
+      <path d="M52 148 L50 104 L100 100Z"/><path d="M52 52 L96 50 L100 100Z"/>
+    </g>
+  </svg>
+
+  <!-- reversible bloom that fires when the Instagram section centers -->
+  <div class="shutter-bloom" id="bloom">
+    <span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span>
+    <span class="glow"></span>
+  </div>
+
+  <div class="grain"></div>
+  <div class="vignette"></div>
+
+  <nav id="nav">
+    <div class="brand">RAY<b>CRAFTS</b></div>
+    <div class="nav-links">
+      <a href="#stats">Stats</a>
+      <a href="#testimonials">Clients</a>
+      <a href="#instagram">Instagram</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button class="btn" onclick="openPortfolio()">Visit Portfolio</button>
+  </nav>
+
+  <div class="wrap">
+    <!-- HERO -->
+    <header class="hero" id="hero">
+      <div class="hero-photo" id="heroPhoto">
+        <div class="ph">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+            <rect x="3" y="6" width="14" height="12" rx="2"/><path d="M17 10l4-2v8l-4-2"/>
+          </svg>
+          YOUR PHOTO HERE
+        </div>
+      </div>
+
+      <div class="hero-inner">
+        <div class="hero-left">
+          <div class="eyebrow reveal">Creative Director · Filmmaker · Editor</div>
+          <h1 class="reveal" data-d="1">RAYYAN<br><span class="out">ALI</span></h1>
+          <div class="role reveal" data-d="2"><b>Filmmaker</b> · <b>Editor</b> · <b>Design</b> · <b>Digital Strategy</b></div>
+          <div class="hero-cta reveal" data-d="3">
+            <button class="btn" onclick="openPortfolio()">Visit Portfolio</button>
+            <a class="btn ghost" href="#contact">Get in touch</a>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <p class="bio reveal" data-d="2">I shoot, edit, design and market impactful content for brands and creators — delivering cinematic stories and scroll-stopping visuals across every platform.</p>
+          <p class="bio dim reveal" data-d="3">Turning visions into visuals that move hearts and stop thumbs. <em>[placeholder bio — drop in your real one]</em></p>
+        </div>
+      </div>
+    </header>
+
+    <!-- STATS -->
+    <section id="stats">
+      <div class="container">
+        <div class="sec-label reveal">Jump in to the stats</div>
+        <h2 class="sec-title reveal" data-d="1">The numbers behind the craft.</h2>
+        <p class="sec-sub reveal" data-d="2">Placeholder figures — send me the real ones and I'll lock them in. Counters animate as they enter view.</p>
+        <div class="stats-grid">
+          <div class="stat glass reveal" data-d="1"><div class="num"><span data-count="240">0</span><span class="unit">+</span></div><div class="lab">Reels &amp; shorts produced</div></div>
+          <div class="stat glass reveal" data-d="2"><div class="num"><span class="unit">£</span><span data-count="250">0</span><span class="unit">K+</span></div><div class="lab">Client revenue generated</div></div>
+          <div class="stat glass reveal" data-d="3"><div class="num"><span data-count="7">0</span><span class="unit"> yrs</span></div><div class="lab">Behind the lens</div></div>
+          <div class="stat glass reveal" data-d="4"><div class="num"><span data-count="48">0</span><span class="unit">M+</span></div><div class="lab">Total views driven</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section id="testimonials">
+      <div class="container">
+        <div class="sec-label reveal">Don't take my word for it</div>
+        <h2 class="sec-title reveal" data-d="1">What clients say.</h2>
+        <p class="sec-sub reveal" data-d="2">Vertical video testimonials — swipe through. Replace each tile with your real clips.</p>
+        <div class="testi-rail" id="testiRail"></div>
+      </div>
+    </section>
+
+    <!-- INSTAGRAM -->
+    <section id="instagram" class="ig">
+      <div class="container">
+        <div class="ig-grid">
+          <div>
+            <div class="sec-label reveal">On the feed</div>
+            <h2 class="sec-title reveal" data-d="1">Catch the work<br>in motion.</h2>
+            <p class="sec-sub reveal" data-d="2">Daily cinematic edits, behind-the-scenes and breakdowns. The phone slides in as you scroll.</p>
+            <div style="margin-top:28px" class="reveal" data-d="3">
+              <a class="btn" href="https://www.instagram.com/imraycraft03/" target="_blank" rel="noopener">@imraycraft03 →</a>
+            </div>
+          </div>
+          <div class="phone" id="phone">
+            <div class="phone-screen">
+              <div class="ig-top">
+                <div class="ig-dp"><i></i></div>
+                <div>
+                  <div class="h">imraycraft03</div>
+                  <div class="s">RayCrafts Garage</div>
+                </div>
+              </div>
+              <div class="ig-nums">
+                <div><b>312</b><span>POSTS</span></div>
+                <div><b>18.4K</b><span>FOLLOWERS</span></div>
+                <div><b>402</b><span>FOLLOWING</span></div>
+              </div>
+              <div class="ig-tiles" id="igTiles"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="container">
+        <div class="contact-card glass reveal">
+          <h2>Let's make something<br>worth watching.</h2>
+          <p>For collaborations, bookings or to discuss your next project — reach out and let's bring the idea to life.</p>
+          <a class="btn" href="mailto:raycrafft@gmail.com?subject=Let's%20work%20together">Start a project</a>
+        </div>
+        <footer>
+          <div class="foot-row">
+            <div class="brand">RAY<b>CRAFTS</b> GARAGE</div>
+            <div style="display:flex; gap:24px;">
+              <a href="https://www.instagram.com/imraycraft03/" target="_blank" rel="noopener">Instagram</a>
+              <a href="mailto:raycrafft@gmail.com">Email</a>
+              <a href="#" onclick="openPortfolio();return false;">Portfolio</a>
+            </div>
+            <div style="font-family:var(--mono); font-size:.7rem; color:var(--ink-dim);">© 2026 Rayyan Ali</div>
+          </div>
+        </footer>
+      </div>
+    </section>
+  </div>
+
+  <!-- PORTFOLIO OVERLAY -->
+  <div class="portfolio" id="portfolio">
+    <div class="container">
+      <div class="pf-head">
+        <div class="row">
+          <h3>Portfolio</h3>
+          <button class="pf-close" onclick="closePortfolio()">✕</button>
+        </div>
+      </div>
+
+      <div class="toggle glass" id="orientToggle">
+        <button class="active" data-orient="vertical">Vertical</button>
+        <button data-orient="horizontal">Horizontal</button>
+      </div>
+
+      <div class="tabs" id="tabs"></div>
+      <div class="pf-grid vertical" id="pfGrid"></div>
+    </div>
+  </div>
+
+<script>
+  /* ——— scroll reveal ——— */
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.18});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  /* ——— animated counters ——— */
+  const counters = document.querySelectorAll('[data-count]');
+  const cio = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      const el=e.target, target=+el.dataset.count; let cur=0;
+      const step=Math.max(1, target/60);
+      const tick=()=>{ cur+=step; if(cur>=target){ el.textContent=target; } else { el.textContent=Math.floor(cur); requestAnimationFrame(tick);} };
+      tick(); cio.unobserve(el);
+    });
+  },{threshold:.6});
+  counters.forEach(el=>cio.observe(el));
+
+  /* ——— unified scroll-driven loop (one rAF, all effects, fully reversible) ——— */
+  const nav=document.getElementById('nav');
+  const bgLens=document.getElementById('bgLens'), iris=document.getElementById('iris');
+  const heroPhoto=document.getElementById('heroPhoto');
+  const phone=document.getElementById('phone'), igSec=document.getElementById('instagram');
+  const bloom=document.getElementById('bloom');
+  const docEl=document.documentElement;
+  let lastY=0, ticking=false;
+  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+  const easeOut=t=>1-Math.pow(1-t,3);
+
+  function frame(){
+    const y=scrollY, vh=innerHeight;
+    const max=docEl.scrollHeight-vh;
+    const sp=max>0 ? y/max : 0;                 // whole-page progress 0..1
+
+    /* nav hides on downward scroll */
+    nav.style.transform = (y>lastY && y>220) ? 'translateX(-50%) translateY(-130%)' : 'translateX(-50%)';
+    lastY=y;
+
+    /* background lens: continuous rotation + breathing iris open/close */
+    bgLens.style.transform = `translate(-50%,-50%) rotate(${sp*170}deg)`;
+    const open = 0.58 + 0.46*(0.5 - 0.5*Math.cos(sp*Math.PI*3));   // breathes a few times down the page
+    iris.setAttribute('transform', `translate(100,100) scale(${open.toFixed(3)}) translate(-100,-100)`);
+
+    /* hero photo: gentle parallax + scale as you leave the hero */
+    const hp = clamp(y/vh, 0, 1);
+    heroPhoto.style.transform = `translateY(${hp*46}px) scale(${1+hp*0.05})`;
+
+    /* IG section — phone starts huge, eases down to natural size as it centers */
+    const r = igSec.getBoundingClientRect();
+    const entry = clamp((vh - r.top)/vh, 0, 1);          // 0 entering bottom → 1 at top
+    const scale = 1.95 - 0.95*easeOut(entry);            // 1.95 → 1.00
+    phone.style.transform = `scale(${Math.max(1,scale).toFixed(3)})`;
+
+    /* reversible bloom — fires as the section centers, retracts when you scroll back */
+    const center = r.top + r.height/2;
+    const focus = clamp(1 - Math.abs(center - vh/2)/(vh*0.85), 0, 1);
+    bloom.style.opacity = (focus*0.85).toFixed(3);
+    bloom.style.transform = `translate(-50%,-50%) scale(${(0.45 + focus*0.95).toFixed(3)}) rotate(${focus*40}deg)`;
+
+    ticking=false;
+  }
+  function onScroll(){ if(!ticking){ ticking=true; requestAnimationFrame(frame); } }
+  addEventListener('scroll', onScroll, {passive:true});
+  addEventListener('resize', onScroll);
+  frame();
+
+  /* ——— placeholder gradients ——— */
+  const grads=['linear-gradient(160deg,#5a1712,#1a0708)','linear-gradient(160deg,#3e1010,#140606)','linear-gradient(160deg,#6e2018,#1c0808)','linear-gradient(160deg,#481414,#150606)','linear-gradient(160deg,#7a241a,#1e0808)','linear-gradient(160deg,#341010,#120505)'];
+  const igTiles=document.getElementById('igTiles');
+  for(let i=0;i<9;i++){ const t=document.createElement('i'); t.style.background=grads[i%grads.length]; igTiles.appendChild(t); }
+
+  const testimonials=[
+    {nm:'Umer Noman', ro:'Co-Founder, Nova Studios', tag:'01'},
+    {nm:'Alina Hayat', ro:'Co-Founder, Nova Studios', tag:'02'},
+    {nm:'Alice Peter', ro:'Co-Founder, Upstream', tag:'03'},
+    {nm:'Osamah Nasir', ro:'Creator, Pakistan', tag:'04'},
+    {nm:'Your Client', ro:'Add more here', tag:'05'},
+  ];
+  const rail=document.getElementById('testiRail');
+  testimonials.forEach((t,i)=>{
+    const el=document.createElement('div'); el.className='testi';
+    el.innerHTML=`<div class="vid" style="background:${grads[i%grads.length]}">
+        <span class="tag">VIDEO · ${t.tag}</span>
+        <div class="play"><svg width="18" height="18" viewBox="0 0 24 24" fill="var(--accent-bright)"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="meta"><div class="nm">${t.nm}</div><div class="ro">${t.ro}</div></div>`;
+    rail.appendChild(el);
+  });
+
+  /* ——— PORTFOLIO data + filter logic ——— */
+  const catalog={
+    vertical:{
+      tabs:['All','UGC','Ads','Animation'],
+      items:[
+        {t:'Skincare UGC', c:'UGC'},{t:'Coffee brand ad', c:'Ads'},{t:'Logo sting', c:'Animation'},
+        {t:'Fitness UGC', c:'UGC'},{t:'App promo', c:'Ads'},{t:'Kinetic type', c:'Animation'},
+        {t:'Fashion UGC', c:'UGC'},{t:'Sale campaign', c:'Ads'},{t:'Product loop', c:'Animation'},
+        {t:'Tech unboxing', c:'UGC'},{t:'Launch teaser', c:'Ads'},{t:'Explainer motion', c:'Animation'},
+      ]
+    },
+    horizontal:{
+      tabs:['All','Commercials','Short Films','Music Videos'],
+      items:[
+        {t:'Auto commercial', c:'Commercials'},{t:'Brand film', c:'Short Films'},{t:'Artist MV', c:'Music Videos'},
+        {t:'Restaurant spot', c:'Commercials'},{t:'Documentary cut', c:'Short Films'},{t:'Live session', c:'Music Videos'},
+        {t:'Hotel promo', c:'Commercials'},{t:'Travel film', c:'Short Films'},{t:'Concept MV', c:'Music Videos'},
+      ]
+    }
+  };
+
+  let curOrient='vertical', curTab='All';
+  const grid=document.getElementById('pfGrid'), tabsEl=document.getElementById('tabs');
+
+  function renderTabs(){
+    tabsEl.innerHTML='';
+    catalog[curOrient].tabs.forEach(tab=>{
+      const b=document.createElement('button'); b.textContent=tab;
+      if(tab===curTab) b.classList.add('active');
+      b.onclick=()=>{ curTab=tab; renderTabs(); renderGrid(); };
+      tabsEl.appendChild(b);
+    });
+  }
+  function renderGrid(){
+    grid.className='pf-grid '+curOrient;
+    grid.innerHTML='';
+    catalog[curOrient].items
+      .filter(it=> curTab==='All' || it.c===curTab)
+      .forEach((it,i)=>{
+        const el=document.createElement('div'); el.className='pf-item';
+        el.style.background=grads[i%grads.length];
+        el.innerHTML=`<div class="play"><svg width="18" height="18" viewBox="0 0 24 24" fill="var(--accent-bright)"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="ov"><div class="t">${it.t}</div><div class="c">${it.c}</div></div>`;
+        grid.appendChild(el);
+      });
+  }
+  document.querySelectorAll('#orientToggle button').forEach(b=>{
+    b.onclick=()=>{
+      document.querySelectorAll('#orientToggle button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      curOrient=b.dataset.orient; curTab='All'; renderTabs(); renderGrid();
+    };
+  });
+  renderTabs(); renderGrid();
+
+  function openPortfolio(){ document.getElementById('portfolio').classList.add('open'); document.body.classList.add('lock'); }
+  function closePortfolio(){ document.getElementById('portfolio').classList.remove('open'); document.body.classList.remove('lock'); }
+  addEventListener('keydown',e=>{ if(e.key==='Escape') closePortfolio(); });
+</script>
+</body>
+</html>
