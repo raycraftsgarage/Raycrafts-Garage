@@ -40,6 +40,46 @@
 
   *{ margin:0; padding:0; box-sizing:border-box; }
   html{ scroll-behavior:smooth; }
+
+  /* ——— cinematic intro ——— */
+  .intro-seen #intro{ display:none !important; }
+  body.intro-active{ overflow:hidden; }
+  #intro{ position:fixed; inset:0; z-index:9999; background:transparent; display:grid; place-items:center; overflow:hidden; }
+  #intro.done{ animation:introOut .6s ease forwards; }
+  @keyframes introOut{ to{ opacity:0; visibility:hidden; } }
+  /* the dark shutter that irises open to reveal the site */
+  .intro-shutter{ position:absolute; inset:0; width:100%; height:100%; z-index:1; }
+  .iris-poly{ transform-box:fill-box; transform-origin:center; transform:scale(0) rotate(0deg);
+    animation:irisOpen 1s cubic-bezier(.55,0,.35,1) 1.2s forwards; }
+  @keyframes irisOpen{ 0%{ transform:scale(0) rotate(0deg); } 100%{ transform:scale(9) rotate(60deg); } }
+  /* faint aperture blade seams that rotate with the opening, then fade */
+  .iris-seams{ position:absolute; inset:0; z-index:2; display:grid; place-items:center; pointer-events:none;
+    opacity:0; animation:seamsFade 1.15s ease 1.2s forwards; }
+  @keyframes seamsFade{ 0%{opacity:0;} 20%{opacity:.55;} 100%{opacity:0;} }
+  .iris-seams svg{ width:80vmax; height:80vmax; transform:rotate(0deg); animation:seamsSpin 1.15s ease 1.2s forwards; }
+  @keyframes seamsSpin{ to{ transform:rotate(60deg); } }
+  .intro-glow{ position:absolute; z-index:1; width:60vmax; height:60vmax; border-radius:50%;
+    background:radial-gradient(circle, rgba(201,64,46,.28), transparent 60%); opacity:0;
+    animation:introGlow 2.2s ease forwards; }
+  @keyframes introGlow{ 0%{opacity:0;} 35%{opacity:1;} 100%{opacity:0;} }
+  .intro-logo{ position:relative; z-index:3; width:min(440px, 72vw); height:120px;
+    background:var(--logo) center/contain no-repeat; opacity:0; filter:blur(10px); transform:scale(.78);
+    animation:introLogo 1.85s cubic-bezier(.2,.7,.2,1) .35s forwards; }
+  @keyframes introLogo{ 0%{opacity:0; filter:blur(12px); transform:scale(.78);}
+    32%{opacity:1; filter:blur(0); transform:scale(1);}
+    62%{opacity:1; transform:scale(1.01);}
+    100%{opacity:0; transform:scale(1.12);} }
+  .intro-skip{ position:absolute; bottom:34px; right:34px; z-index:4; background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.7); font-family:var(--mono);
+    font-size:.72rem; letter-spacing:.08em; padding:9px 16px; border-radius:10px; cursor:pointer;
+    opacity:0; animation:fadeInSkip .4s ease 1s forwards; transition:color .2s, background .2s; }
+  .intro-skip:hover{ color:#fff; background:rgba(255,255,255,.12); }
+  @keyframes fadeInSkip{ to{ opacity:1; } }
+  #intro.reduced .iris-seams, #intro.reduced .intro-glow{ display:none; }
+  #intro.reduced .intro-shutter{ display:none; }
+  #intro.reduced{ background:#070203; }
+  #intro.reduced .intro-logo{ animation:introLogoR .6s ease forwards; }
+  @keyframes introLogoR{ 0%{opacity:0; transform:scale(.9);} 100%{opacity:1; transform:scale(1);} }
   body{
     background:
       radial-gradient(120% 90% at 78% 18%, #6E1A12 0%, #2E0A0A 38%, #160608 70%),
@@ -422,8 +462,37 @@
   gtag('js', new Date());
   gtag('config', 'G-XXXXXXXXXX'); // ← replace G-XXXXXXXXXX with your real GA4 Measurement ID
 </script>
+<script>try{ if(localStorage.getItem('rc_intro')==='1') document.documentElement.classList.add('intro-seen'); }catch(e){}</script>
 </head>
 <body>
+  <!-- CINEMATIC INTRO (first visit only) -->
+  <div id="intro" aria-hidden="true">
+    <svg class="intro-shutter" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <mask id="irisMask">
+          <rect width="100" height="100" fill="#fff"/>
+          <polygon class="iris-poly" points="50,40 57.82,43.77 59.75,52.23 54.34,59.01 45.66,59.01 40.25,52.23 42.18,43.77" fill="#000"/>
+        </mask>
+      </defs>
+      <rect width="100" height="100" fill="#070203" mask="url(#irisMask)"/>
+    </svg>
+    <div class="iris-seams">
+      <svg viewBox="0 0 100 100" fill="none" stroke="rgba(201,64,46,.6)" stroke-width="0.4">
+        <polygon points="50,38 60.4,43.03 62.96,54.31 55.78,63.36 44.22,63.36 37.04,54.31 39.6,43.03"/>
+        <line x1="50" y1="50" x2="50" y2="38"/>
+        <line x1="50" y1="50" x2="60.4" y2="43.03"/>
+        <line x1="50" y1="50" x2="62.96" y2="54.31"/>
+        <line x1="50" y1="50" x2="55.78" y2="63.36"/>
+        <line x1="50" y1="50" x2="44.22" y2="63.36"/>
+        <line x1="50" y1="50" x2="37.04" y2="54.31"/>
+        <line x1="50" y1="50" x2="39.6" y2="43.03"/>
+      </svg>
+    </div>
+    <div class="intro-glow"></div>
+    <div class="intro-logo"></div>
+    <button class="intro-skip" onclick="window.__endIntro&&window.__endIntro()">Skip ›</button>
+  </div>
+
   <div class="ambient"></div>
 
   <!-- scroll-reactive aperture lens: rotates + breathes open/closed the whole way down -->
@@ -996,6 +1065,26 @@
         if(accept && window.gtag) gtag('consent','update',{analytics_storage:'granted'});
         banner.classList.remove('show');
       };
+    })();
+  </script>
+  <script>
+    (function(){
+      const intro=document.getElementById('intro');
+      if(!intro) return;
+      let seen=null; try{ seen=localStorage.getItem('rc_intro'); }catch(e){}
+      if(seen==='1'){ intro.remove(); return; }
+      document.body.classList.add('intro-active');
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(reduce){ intro.classList.add('reduced'); }
+      let ended=false;
+      function endIntro(){
+        if(ended) return; ended=true;
+        intro.classList.add('done');
+        try{ localStorage.setItem('rc_intro','1'); }catch(e){}
+        setTimeout(()=>{ intro.remove(); document.body.classList.remove('intro-active'); }, 650);
+      }
+      window.__endIntro=endIntro;
+      setTimeout(endIntro, reduce ? 750 : 2150);
     })();
   </script>
 </body>
