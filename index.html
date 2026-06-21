@@ -412,6 +412,71 @@
   .pf-empty p{ color:var(--ink-dim); font-family:var(--mono); font-size:.82rem; max-width:44ch; margin:0 auto; }
   .pf-desc{ color:var(--ink-dim); font-size:.95rem; line-height:1.65; max-width:64ch; margin:-6px 0 28px; }
 
+  /* ——— About / My Story overlay ——— */
+  .about-overlay{ position:fixed; inset:0; z-index:140; opacity:0; visibility:hidden; transition:opacity .35s ease;
+    background:radial-gradient(120% 90% at 50% 0%, #2a0a0c 0%, #160608 55%, #0c0405 100%); overflow:hidden; }
+  .about-overlay.open{ opacity:1; visibility:visible; }
+  /* parting doors */
+  .about-door{ position:absolute; top:0; bottom:0; width:51%; z-index:6; pointer-events:none;
+    background:linear-gradient(180deg,#1c080a,#0a0304); transition:transform .85s cubic-bezier(.76,0,.18,1); }
+  .about-door.l{ left:0; border-right:1px solid rgba(201,64,46,.4); }
+  .about-door.r{ right:0; border-left:1px solid rgba(201,64,46,.4); }
+  .about-overlay.open .about-door.l{ transform:translateX(-101%); }
+  .about-overlay.open .about-door.r{ transform:translateX(101%); }
+  .about-close{ position:absolute; top:22px; right:24px; z-index:8; width:44px; height:44px; border-radius:50%;
+    background:rgba(255,255,255,.08); border:1px solid var(--glass-brd); color:var(--ink); cursor:pointer; font-size:1rem; }
+  .about-close:hover{ background:rgba(255,255,255,.16); }
+  .about-inner{ position:relative; z-index:2; height:100%; display:flex; flex-direction:column; padding:64px 5vw 40px; }
+  .about-head{ flex:0 0 auto; }
+  .about-title{ font-family:var(--display); font-weight:800; font-size:clamp(2rem,5vw,3.4rem); letter-spacing:-.02em; margin:6px 0 10px; }
+  .about-prompt{ font-family:var(--mono); font-size:.8rem; letter-spacing:.06em; color:var(--accent); transition:opacity .4s; }
+  .about-prompt.gone{ opacity:0; }
+  .about-stage{ position:relative; flex:1 1 auto; margin-top:10px; overflow:hidden; cursor:ew-resize; touch-action:none; }
+  .about-track{ position:absolute; top:0; left:0; height:100%; will-change:transform; }
+  .about-svg{ position:absolute; top:0; left:0; }
+  .line-base{ fill:none; stroke:rgba(255,255,255,.16); stroke-width:2; stroke-dasharray:2 9; stroke-linecap:round; }
+  .line-trail{ fill:none; stroke:var(--accent); stroke-width:2.5; stroke-linecap:round; filter:drop-shadow(0 0 6px rgba(201,64,46,.7)); }
+  .about-nodes{ position:absolute; inset:0; }
+  .node{ position:absolute; transform:translate(-50%,-50%); }
+  .node-dot{ position:absolute; left:0; top:0; transform:translate(-50%,-50%); width:13px; height:13px; border-radius:50%;
+    background:var(--accent); opacity:.25; transition:opacity .45s, box-shadow .45s; }
+  .node.on .node-dot{ opacity:1; box-shadow:0 0 20px 4px rgba(201,64,46,.6); }
+  .node-card{ position:absolute; left:0; width:210px; transform:translateX(-50%) translateY(14px); opacity:0;
+    transition:opacity .5s ease, transform .5s ease; }
+  .node.above .node-card{ bottom:30px; }
+  .node.below .node-card{ top:30px; transform:translateX(-50%) translateY(-14px); }
+  .node.on .node-card{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .node-card{ background:rgba(28,12,12,.72); border:1px solid var(--glass-brd); border-radius:14px; padding:14px 16px;
+    backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+  .node-badge{ display:inline-flex; align-items:center; justify-content:center; min-width:42px; height:42px; padding:0 10px;
+    border-radius:10px; background:var(--accent-soft); border:1px solid rgba(201,64,46,.4); color:var(--ink);
+    font-family:var(--display); font-weight:700; font-size:.9rem; margin-bottom:10px; }
+  .node-org{ font-family:var(--display); font-weight:700; font-size:1rem; line-height:1.2; }
+  .node-year{ font-family:var(--mono); font-size:.64rem; letter-spacing:.08em; color:var(--accent); margin-bottom:4px; }
+  .node-role{ font-size:.82rem; color:var(--ink); margin-top:3px; }
+  .node-desc{ font-size:.76rem; color:var(--ink-dim); margin-top:5px; line-height:1.45; }
+  .node-loc{ font-family:var(--mono); font-size:.62rem; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-dim); margin-top:8px; }
+  .node.edu .node-card{ border-color:rgba(201,64,46,.4); }
+  /* photo reveal node */
+  .node.photo .about-photo{ position:absolute; left:0; top:0; transform:translate(-50%,-50%);
+    width:200px; height:250px; border-radius:18px; overflow:hidden; border:1px solid var(--glass-brd);
+    background:#0a0304; display:grid; place-items:center; }
+  .about-photo .silhouette{ width:70%; height:70%; fill:#000; filter:drop-shadow(0 0 1px rgba(201,64,46,.6));
+    transition:fill .8s ease, filter .8s ease; }
+  .about-photo .about-photo-tag{ position:absolute; bottom:14px; left:0; right:0; text-align:center;
+    font-family:var(--mono); font-size:.62rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-dim); opacity:0; transition:opacity .6s; }
+  .about-photo.lit{ box-shadow:0 0 50px rgba(201,64,46,.45); }
+  .about-photo.lit .silhouette{ fill:#3a1416; }
+  .about-photo.lit .about-photo-tag{ opacity:1; }
+  .about-photo .about-photo-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    filter:brightness(0); transition:filter 1s ease; }
+  .about-photo.lit .about-photo-img{ filter:brightness(1); }
+  @media(max-width:768px){
+    .about-inner{ padding:60px 6vw 30px; }
+    .node-card{ width:168px; padding:12px 13px; }
+    .node.photo .about-photo{ width:150px; height:190px; }
+  }
+
   .pf-grid{ display:grid; gap:16px; padding-bottom:90px; }
   .pf-grid.vertical{ grid-template-columns:repeat(4,1fr); }
   .pf-grid.horizontal{ grid-template-columns:repeat(3,1fr); }
@@ -548,6 +613,7 @@
           <div class="role reveal" data-d="2"><b>Filmmaker</b> · <b>Editor</b> · <b>Design</b> · <b>Digital Strategy</b></div>
           <div class="hero-cta reveal" data-d="3">
             <button class="btn" onclick="openPortfolio()">Visit Portfolio</button>
+            <button class="btn ghost" onclick="openAbout()">My Story</button>
             <button class="btn ghost" onclick="openContact()">Get in touch</button>
           </div>
         </div>
@@ -633,6 +699,29 @@
         </footer>
       </div>
     </section>
+  </div>
+
+  <!-- ABOUT / MY STORY OVERLAY -->
+  <div class="about-overlay" id="aboutOverlay" aria-hidden="true">
+    <div class="about-door l"></div>
+    <div class="about-door r"></div>
+    <button class="about-close" onclick="closeAbout()" aria-label="Close">✕</button>
+    <div class="about-inner">
+      <div class="about-head">
+        <div class="sec-label">The story so far</div>
+        <h2 class="about-title">Where I've been.</h2>
+        <p class="about-prompt" id="aboutPrompt">Drag across the line to reveal the journey →</p>
+      </div>
+      <div class="about-stage" id="aboutStage">
+        <div class="about-track" id="aboutTrack">
+          <svg class="about-svg" id="aboutSvg" preserveAspectRatio="none">
+            <path class="line-base" id="lineBase"></path>
+            <path class="line-trail" id="lineTrail"></path>
+          </svg>
+          <div class="about-nodes" id="aboutNodes"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- PORTFOLIO OVERLAY -->
@@ -1008,6 +1097,110 @@
 
   function openPortfolio(){ document.getElementById('portfolio').classList.add('open'); document.body.classList.add('lock'); }
   function closePortfolio(){ document.getElementById('portfolio').classList.remove('open'); document.body.classList.remove('lock'); }
+
+  /* ——— About / My Story ——— */
+  const story=[
+    { type:'edu',  org:'Beykent University',     role:'BA · Radio, Television & Film', loc:'Istanbul, Türkiye', badge:'BU' },
+    { type:'edu',  org:'University of Brighton',  role:'Business Management',            loc:'United Kingdom',     badge:'UoB' },
+    { type:'work', org:'Upstream',                role:'Content Creator',                year:'2021 – 2023', desc:'Video editing & stock-footage storytelling.', loc:'Karachi, Pakistan' },
+    { type:'work', org:'Torchlight Digital',      role:'Short-Form Video Editor',        year:'2023 – 2024', desc:'Short-form editing in Final Cut Pro.',         loc:'Malaysia · Remote' },
+    { type:'work', org:'applywise.io',            role:'Marketing Specialist',           year:'2024 – 2025', desc:'Instagram marketing & Final Cut Pro edits.',   loc:'Remote' },
+    { type:'work', org:'Dentawista Clinic',       role:'Social Media Strategist & Content Creator', year:'2024 – 2025', desc:'Editing, cinematography & content direction.', loc:'Istanbul · On-site' },
+    { type:'work', org:'Nova Studios FZC',        role:'Senior Video Editing Specialist',year:'2025', desc:'Short-form editing & video creation.',         loc:'Remote' },
+    { type:'work', org:'MakeAWillOnline',         role:'Marketing & Content Strategist', year:'2025 – Present', desc:'Built the brand\'s full social presence — content, paid ads & motion graphics.', loc:'Brighton, UK' },
+    { type:'work', org:'RayCrafts Garage',        role:'Founder',                        year:'2022 – Present', desc:'Filmmaker, editor & creative director.',       loc:'Self-employed' }
+  ];
+  let aboutBuilt=false, ap=0, apTarget=0, aboutRAF=null, trackW=0, pathLen=0;
+  const N=story.length;
+
+  function buildAbout(){
+    const stage=document.getElementById('aboutStage');
+    const stageW=stage.clientWidth, stageH=stage.clientHeight;
+    const isM = innerWidth<=768;
+    const step=Math.max(isM?220:300, stageW*(isM?0.62:0.40));
+    trackW=Math.round(step*(N+1));
+    const track=document.getElementById('aboutTrack');
+    track.style.width=trackW+'px';
+    const midY=stageH*0.5, amp=Math.min(isM?70:130, stageH*0.20);
+    let d='M 0 '+midY.toFixed(0);
+    const segs=90;
+    for(let i=1;i<=segs;i++){ const x=trackW*i/segs, yy=midY+amp*Math.sin(i/segs*Math.PI*3); d+=' L '+x.toFixed(1)+' '+yy.toFixed(1); }
+    const svg=document.getElementById('aboutSvg');
+    svg.setAttribute('viewBox',`0 0 ${trackW} ${stageH}`); svg.style.width=trackW+'px'; svg.style.height=stageH+'px';
+    const base=document.getElementById('lineBase'), trail=document.getElementById('lineTrail');
+    base.setAttribute('d',d); trail.setAttribute('d',d);
+    pathLen=trail.getTotalLength(); trail.style.strokeDasharray=pathLen; trail.style.strokeDashoffset=pathLen;
+    const nodesEl=document.getElementById('aboutNodes'); nodesEl.innerHTML='';
+    const posAt=t=>({ x:t*trackW, y:midY+amp*Math.sin(t*Math.PI*3) });
+    story.forEach((s,i)=>{
+      const t=(i+0.7)/(N+1), p=posAt(t), above=i%2===0;
+      const card=document.createElement('div');
+      card.className='node '+(above?'above':'below')+(s.type==='edu'?' edu':' work');
+      card.style.left=p.x+'px'; card.style.top=p.y+'px'; card.dataset.t=t;
+      card.innerHTML=`<span class="node-dot"></span>
+        <div class="node-card">${s.badge?`<span class="node-badge">${s.badge}</span>`:''}
+          ${s.year?`<div class="node-year">${s.year}</div>`:''}
+          <div class="node-org">${s.org}</div>
+          <div class="node-role">${s.role}</div>
+          ${s.desc?`<div class="node-desc">${s.desc}</div>`:''}
+          ${s.loc?`<div class="node-loc">${s.loc}</div>`:''}
+        </div>`;
+      nodesEl.appendChild(card);
+    });
+    const pt=0.985, pp=posAt(pt);
+    const ph=document.createElement('div'); ph.className='node photo'; ph.dataset.t=pt;
+    ph.style.left=pp.x+'px'; ph.style.top=midY+'px';
+    ph.innerHTML=`<div class="about-photo" id="aboutPhoto">
+        <!-- swap this SVG for <img class="about-photo-img" src="YOUR_PHOTO"> when the photo is ready -->
+        <svg viewBox="0 0 100 120" class="silhouette"><path d="M50 8a20 20 0 0 1 20 20v4a20 20 0 0 1-40 0v-4a20 20 0 0 1 20-20zM12 116c0-22 17-34 38-34s38 12 38 34z"/></svg>
+        <span class="about-photo-tag">Rayyan Ali</span>
+      </div>`;
+    nodesEl.appendChild(ph);
+    aboutBuilt=true; applyAbout();
+  }
+  function applyAbout(){
+    const stage=document.getElementById('aboutStage'); if(!stage) return;
+    const panMax=Math.max(0, trackW - stage.clientWidth);
+    document.getElementById('aboutTrack').style.transform=`translateX(${-(ap*panMax).toFixed(1)}px)`;
+    const trail=document.getElementById('lineTrail');
+    if(trail) trail.style.strokeDashoffset=(pathLen*(1-ap)).toFixed(1);
+    document.querySelectorAll('#aboutNodes .node').forEach(n=>{
+      if(ap>=parseFloat(n.dataset.t)-0.03) n.classList.add('on');
+    });
+    const photo=document.getElementById('aboutPhoto');
+    if(photo && ap>=0.94) photo.classList.add('lit');
+  }
+  function aboutRAFstart(){
+    if(aboutRAF) return;
+    const tick=()=>{
+      ap += (apTarget-ap)*0.14;
+      if(Math.abs(apTarget-ap)<0.0008) ap=apTarget;
+      applyAbout();
+      aboutRAF = Math.abs(apTarget-ap)>0.0004 ? requestAnimationFrame(tick) : null;
+    };
+    aboutRAF=requestAnimationFrame(tick);
+  }
+  function aboutPointer(e){
+    const stage=document.getElementById('aboutStage'); const r=stage.getBoundingClientRect();
+    const cx = e.clientX!=null ? e.clientX : (e.touches&&e.touches[0]?e.touches[0].clientX:0);
+    apTarget = Math.min(1, Math.max(0, (cx - r.left)/r.width));
+    document.getElementById('aboutPrompt').classList.add('gone');
+    aboutRAFstart();
+  }
+  function openAbout(){
+    const ov=document.getElementById('aboutOverlay');
+    ov.classList.add('open'); document.body.classList.add('lock');
+    ap=0; apTarget=0;
+    requestAnimationFrame(()=>{ buildAbout(); });
+  }
+  function closeAbout(){ document.getElementById('aboutOverlay').classList.remove('open'); document.body.classList.remove('lock'); }
+  (function(){
+    const stage=document.getElementById('aboutStage');
+    stage.addEventListener('pointermove', aboutPointer);
+    stage.addEventListener('pointerdown', aboutPointer);
+    addEventListener('keydown', e=>{ if(e.key==='Escape' && document.getElementById('aboutOverlay').classList.contains('open')) closeAbout(); });
+    addEventListener('resize', ()=>{ if(document.getElementById('aboutOverlay').classList.contains('open')) buildAbout(); });
+  })();
 
   /* contact modal */
   function openContact(){ cmShow('choose'); document.getElementById('contactModal').classList.add('open'); document.body.classList.add('lock'); }
