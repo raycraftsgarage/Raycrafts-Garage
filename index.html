@@ -408,6 +408,7 @@
   .orient-btn.active .orient-rect, .orient-btn:hover .orient-rect{ color:var(--accent); }
   .pf-empty{ text-align:center; padding:80px 20px 100px; }
   .pf-empty p{ color:var(--ink-dim); font-family:var(--mono); font-size:.82rem; max-width:44ch; margin:0 auto; }
+  .pf-desc{ color:var(--ink-dim); font-size:.95rem; line-height:1.65; max-width:64ch; margin:-6px 0 28px; }
 
   .pf-grid{ display:grid; gap:16px; padding-bottom:90px; }
   .pf-grid.vertical{ grid-template-columns:repeat(4,1fr); }
@@ -673,6 +674,7 @@
       </div>
 
       <div class="tabs" id="tabs"></div>
+      <div class="pf-desc" id="pfDesc"></div>
       <div class="pf-grid vertical" id="pfGrid"></div>
       <div id="pfEmpty" class="pf-empty" hidden>
         <p>Horizontal work coming soon — landscape films, commercials and music videos are on the way.</p>
@@ -847,12 +849,83 @@
   function getThumb(url){ return `https://img.youtube.com/vi/${getVideoId(url)}/maxresdefault.jpg`; }
   function getThumbFallback(url){ return `https://img.youtube.com/vi/${getVideoId(url)}/hqdefault.jpg`; }
 
-  // Horizontal (16:9) videos — add links here later, same format: { url:"...", category:"..." }
-  const videosH=[];
+  // Horizontal (16:9) videos
+  const videosH=[
+    { url:"https://www.youtube.com/watch?v=Huob7ZefcOY", category:"Commercials / Ads" },
+    { url:"https://www.youtube.com/watch?v=nU-Lv0OSpdA", category:"Commercials / Ads" },
+
+    { url:"https://www.youtube.com/watch?v=39U9YcinoN8", category:"Brand Films" },
+    { url:"https://www.youtube.com/watch?v=MFHYo_EUeiA", category:"Brand Films" },
+    { url:"https://www.youtube.com/watch?v=h34Ke2DbEUo", category:"Brand Films" },
+    { url:"https://www.youtube.com/watch?v=3rA3zd7EGmw", category:"Brand Films" },
+    { url:"https://www.youtube.com/watch?v=9wgSbW7Lc7M", category:"Brand Films" },
+    { url:"https://www.youtube.com/watch?v=X-zcFbV-fe8", category:"Brand Films" },
+    { url:"https://www.youtube.com/watch?v=dqWDcAbLIhw", category:"Brand Films" },
+    { url:"https://www.youtube.com/watch?v=6m4outuZ9bw", category:"Brand Films" },
+
+    { url:"https://www.youtube.com/watch?v=fWRYHVDYHu4", category:"Branded Content / Campaign Films" },
+    { url:"https://www.youtube.com/watch?v=Cg1KNgdN62o", category:"Branded Content / Campaign Films" },
+    { url:"https://www.youtube.com/watch?v=jdHDPPbpNSE", category:"Branded Content / Campaign Films" },
+    { url:"https://www.youtube.com/watch?v=G-VPQVYfPYs", category:"Branded Content / Campaign Films" },
+    { url:"https://www.youtube.com/watch?v=hYVtbfxIl_c", category:"Branded Content / Campaign Films" },
+    { url:"https://www.youtube.com/watch?v=6m4outuZ9bw", category:"Branded Content / Campaign Films" },
+    { url:"https://www.youtube.com/watch?v=q1YuSxUDOy0", category:"Branded Content / Campaign Films" },
+
+    { url:"https://www.youtube.com/watch?v=j6u23BRoipo", category:"Product / Fashion Films" },
+    { url:"https://www.youtube.com/watch?v=i8UgDrIPrNo", category:"Product / Fashion Films" },
+    { url:"https://www.youtube.com/watch?v=dqWDcAbLIhw", category:"Product / Fashion Films" },
+
+    { url:"https://www.youtube.com/watch?v=G-VPQVYfPYs", category:"Documentary / Docu-style" },
+
+    { url:"https://www.youtube.com/watch?v=uMjU48tjUc4", category:"Short Films / Narrative" },
+    { url:"https://www.youtube.com/watch?v=4WOypGdeqsc", category:"Short Films / Narrative" },
+    { url:"https://www.youtube.com/watch?v=ex467b_RjVU", category:"Short Films / Narrative" },
+    { url:"https://www.youtube.com/watch?v=zbtbsTimJm4", category:"Short Films / Narrative" },
+
+    { url:"https://www.youtube.com/watch?v=EJUftdEaKio", category:"Event / Recap" },
+    { url:"https://www.youtube.com/watch?v=-JCcUsakSuU", category:"Event / Recap" },
+    { url:"https://www.youtube.com/watch?v=ySIQ8k1iqTY", category:"Event / Recap" },
+    { url:"https://www.youtube.com/watch?v=sUZgXW8ErGM", category:"Event / Recap" },
+    { url:"https://www.youtube.com/watch?v=m_kOZUliENk", category:"Event / Recap" },
+    { url:"https://www.youtube.com/watch?v=XIbP40hkEIo", category:"Event / Recap" },
+    { url:"https://www.youtube.com/watch?v=4t2IFm4ME3c", category:"Event / Recap" },
+
+    { url:"https://www.youtube.com/watch?v=zbtbsTimJm4", category:"Music Videos" },
+    { url:"https://www.youtube.com/watch?v=4WOypGdeqsc", category:"Music Videos" },
+    { url:"https://www.youtube.com/watch?v=3hTm-y-3eL4", category:"Music Videos" },
+    { url:"https://www.youtube.com/watch?v=3sF8gbUtgko", category:"Music Videos" },
+    { url:"https://www.youtube.com/watch?v=9V3YlK649bI", category:"Music Videos" },
+
+    { url:"https://www.youtube.com/watch?v=NP_EKGuHh8I", category:"Animation" },
+    { url:"https://www.youtube.com/watch?v=I4HUTzFEJnA", category:"Animation" },
+    { url:"https://www.youtube.com/watch?v=ex467b_RjVU", category:"Animation" }
+  ];
+
+  // Short skill-focused explainer shown when a category tab is active
+  const catDesc = {
+    "Commercials / Ads": "Short, sharp spots built to sell. Hook-first structure, lighting, pacing and conversion-driven editing.",
+    "Brand Films": "Story-led pieces that capture a brand's mood rather than hard-sell it. Cinematography, lighting, colour grading and rhythm carry the feel.",
+    "Branded Content / Campaign Films": "Theme- and message-driven films for a client or campaign, often interview-led. Directing talent, framing, sound design and narrative editing.",
+    "Product / Fashion Films": "Design-led work with the product or garment as hero. Macro detail, controlled lighting, motion and precise edit timing.",
+    "Documentary / Docu-style": "Real people, real moments, captured observationally. Run-and-gun shooting, interview directing and story-finding in the edit.",
+    "Short Films / Narrative": "Scripted, story-driven filmmaking. Directing, shot composition, continuity, colour and pacing in service of the story.",
+    "Event / Recap": "Aftermovies that compress a whole event into energy and emotion. Fast multi-cam coverage and music-driven cutting.",
+    "Music Videos": "Performance and concept work cut to track. Rhythm-led editing, lighting, colour grading and visual style built around the music.",
+    "Animation": "Motion graphics and animated work, from titles to fully animated pieces. Design, keyframing, motion and sound sync.",
+    "UGC": "Authentic, creator-style content made to feel native to the feed. Hook-first scripting, punchy edits and platform-native pacing.",
+    "Creative Direction": "Concept-led short-form where I shape the idea, look and execution end to end.",
+    "AI Integration": "Short-form work weaving AI tools into the creative and editing workflow.",
+    "Fast Paced": "High-energy, rhythm-driven edits built to hold attention frame to frame."
+  };
+  const allDesc = {
+    vertical: "Short-form vertical work — creator content, creative direction and fast-paced edits made for the feed.",
+    horizontal: "A cross-section of my landscape work — commercials, brand films, music videos and more. Shot, directed, edited and graded."
+  };
 
   let curTab='All', curOrient='vertical', visibleCount=12, lbIndex=0, lbList=[];
   const grid=document.getElementById('pfGrid'), tabsEl=document.getElementById('tabs');
   const pfEmpty=document.getElementById('pfEmpty'), loadMoreBtn=document.getElementById('loadMoreBtn');
+  const pfDesc=document.getElementById('pfDesc');
 
   function activeVideos(){ return curOrient==='horizontal' ? videosH : videos; }
 
@@ -876,9 +949,19 @@
   }
   function filteredVideos(){
     const list=activeVideos();
-    return curTab==='All' ? list : list.filter(v=>v.category===curTab);
+    if(curTab!=='All') return list.filter(v=>v.category===curTab);
+    // 'All' — dedupe videos that sit in more than one category
+    const seen=new Set(), out=[];
+    list.forEach(v=>{ const id=getVideoId(v.url); if(!seen.has(id)){ seen.add(id); out.push(v); } });
+    return out;
+  }
+  function updateDesc(){
+    const d = curTab==='All' ? (allDesc[curOrient]||'') : (catDesc[curTab]||'');
+    pfDesc.textContent = d;
+    pfDesc.style.display = d ? 'block' : 'none';
   }
   function renderGrid(){
+    updateDesc();
     grid.className='pf-grid '+curOrient;
     grid.innerHTML='';
     const list=filteredVideos();
