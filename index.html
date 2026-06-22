@@ -267,9 +267,9 @@
   .reveal[data-d="3"]{ transition-delay:.24s;} .reveal[data-d="4"]{ transition-delay:.32s;}
 
   /* ——— testimonials ——— */
-  .testi-rail{ display:flex; gap:40px; overflow-x:auto; padding:40px 2px 18px; scroll-snap-type:x mandatory; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .testi-rail{ display:flex; gap:40px; overflow-x:auto; padding:40px 0 18px 0; scroll-snap-type:x mandatory; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .testi-rail::-webkit-scrollbar{ display:none; }
-  .testi{ flex:0 0 auto; width:248px; scroll-snap-align:start; }
+  .testi{ flex:0 0 calc((100% - 120px) / 4); scroll-snap-align:start; }
   .testi .vid{
     width:100%; aspect-ratio:9/16; border-radius:18px; overflow:hidden; position:relative;
     background:linear-gradient(165deg,#3a1012,#160607); display:grid; place-items:center; cursor:pointer;
@@ -286,20 +286,23 @@
   .testi .meta{ margin-top:14px; }
   .testi .meta .nm{ font-family:var(--display); font-weight:600; font-size:1rem; }
   .testi .meta .ro{ font-family:var(--mono); font-size:.68rem; color:var(--ink-dim); margin-top:3px; letter-spacing:.04em; }
+  @media(max-width:880px){ .testi{ flex:0 0 calc((100% - 40px) / 2); } }
+  @media(max-width:560px){ .testi{ flex:0 0 78%; } }
+
 
   /* ——— instagram phone scroll-in ——— */
   .ig{ position:relative; overflow:hidden; }
   .ig-grid{ display:grid; grid-template-columns:1fr 360px; gap:60px; align-items:center; }
   .phone{
-    position:relative; width:300px; aspect-ratio:9/19; border-radius:42px; padding:12px;
+    position:relative; width:320px; border-radius:42px; padding:12px;
     background:linear-gradient(160deg,#2a1014,#140607);
     border:1px solid var(--glass-brd);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 40px 90px rgba(0,0,0,.6);
     will-change:transform; justify-self:center;
   }
-  .phone-screen{ width:100%; height:100%; border-radius:32px; overflow:hidden; background:#0b0c10; }
+  .phone-screen{ width:100%; aspect-ratio:520/990; border-radius:32px; overflow:hidden; background:#0b0c10; }
   .phone-link{ display:block; cursor:pointer; }
-  .ig-shot{ width:100%; height:100%; object-fit:cover; object-position:top center; display:block; transition:transform .4s ease; }
+  .ig-shot{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; transition:transform .4s ease; }
   .phone-link:hover .ig-shot{ transform:scale(1.03); }
   .ig-top{ padding:16px 14px 10px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--line); }
   .ig-dp{ width:42px; height:42px; border-radius:50%; background:conic-gradient(from 0deg,var(--accent),#ff7a59,#5b78ff,var(--accent)); padding:2px; }
@@ -650,7 +653,7 @@
       <div class="hero-inner">
         <div class="hero-left">
           <div class="eyebrow reveal">Creative Director · Filmmaker · Editor</div>
-          <h1 class="reveal" data-d="1">RAYYAN<br><span class="out">ALI</span></h1>
+          <h1 class="reveal" data-d="1">RAYYAN <span class="out">ALI</span></h1>
           <div class="role reveal" data-d="2"><b>Filmmaker</b> · <b>Creative Director</b> · <b>Editor</b> · <b>Design</b> · <b>Marketing Strategist</b></div>
           <div class="hero-cta reveal" data-d="3">
             <button class="btn" onclick="openPortfolio()">Visit Portfolio</button>
