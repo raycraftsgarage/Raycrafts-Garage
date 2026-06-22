@@ -220,6 +220,7 @@
     filter:drop-shadow(0 0 26px rgba(201,64,46,.42));
     will-change:transform; }
   @media(max-width:880px){ .ig-figure{ width:78vmin; height:78vmin; } .ig-fig-fill{ width:32vmin; height:80vmin; } }
+  @media(max-width:768px){ .about-stage{ cursor:grab; } .about-stage:active{ cursor:grabbing; } }
 
   /* reversible shutter bloom (scrubbed by scroll near the IG section) */
   .shutter-bloom{ position:fixed; top:50%; left:50%; z-index:0; pointer-events:none;
@@ -650,7 +651,7 @@
         <div class="hero-left">
           <div class="eyebrow reveal">Creative Director · Filmmaker · Editor</div>
           <h1 class="reveal" data-d="1">RAYYAN<br><span class="out">ALI</span></h1>
-          <div class="role reveal" data-d="2"><b>Filmmaker</b> · <b>Editor</b> · <b>Design</b> · <b>Digital Strategy</b></div>
+          <div class="role reveal" data-d="2"><b>Filmmaker</b> · <b>Creative Director</b> · <b>Editor</b> · <b>Design</b> · <b>Marketing Strategist</b></div>
           <div class="hero-cta reveal" data-d="3">
             <button class="btn" onclick="openPortfolio()">Visit Portfolio</button>
             <button class="btn ghost" onclick="openAbout()">My Story</button>
@@ -660,7 +661,7 @@
 
         <div class="hero-right">
           <p class="bio reveal" data-d="2">I shoot, edit, design and market impactful content for brands and creators — delivering cinematic stories and scroll-stopping visuals across every platform.</p>
-          <p class="bio dim reveal" data-d="3">Turning visions into visuals that move hearts and stop thumbs. <em>[placeholder bio — drop in your real one]</em></p>
+          <p class="bio dim reveal" data-d="3">Turning visions into visuals that move hearts and stop thumbs.</p>
         </div>
       </div>
     </header>
@@ -670,7 +671,7 @@
       <div class="container">
         <div class="sec-label reveal">Jump in to the stats</div>
         <h2 class="sec-title reveal" data-d="1">The numbers behind the craft.</h2>
-        <p class="sec-sub reveal" data-d="2">Placeholder figures — send me the real ones and I'll lock them in. Counters animate as they enter view.</p>
+        <p class="sec-sub reveal" data-d="2">A few numbers from behind the lens.</p>
         <div class="stats-grid">
           <div class="stat glass reveal" data-d="1"><div class="num"><span data-count="240">0</span><span class="unit">+</span></div><div class="lab">Reels &amp; shorts produced</div></div>
           <div class="stat glass reveal" data-d="2"><div class="num"><span class="unit">£</span><span data-count="250">0</span><span class="unit">K+</span></div><div class="lab">Client revenue generated</div></div>
@@ -697,7 +698,7 @@
           <div>
             <div class="sec-label reveal">On the feed</div>
             <h2 class="sec-title reveal" data-d="1">Catch the work<br>in motion.</h2>
-            <p class="sec-sub reveal" data-d="2">Daily cinematic edits, behind-the-scenes and breakdowns. The phone slides in as you scroll.</p>
+            <p class="sec-sub reveal" data-d="2">Daily cinematic edits, behind-the-scenes and breakdowns.</p>
             <div style="margin-top:28px" class="reveal" data-d="3">
               <a class="btn" href="https://www.instagram.com/imraycraft03/" target="_blank" rel="noopener">@imraycraft03 →</a>
             </div>
@@ -1156,25 +1157,32 @@
     { type:'edu',  org:'University of Brighton',  role:'Business Management',            loc:'United Kingdom',     badge:'UoB' },
     { type:'work', org:'Upstream',                role:'Content Creator',                year:'2021 – 2023', desc:'Video editing & stock-footage storytelling.', loc:'Karachi, Pakistan' },
     { type:'work', org:'Torchlight Digital',      role:'Short-Form Video Editor',        year:'2023 – 2024', desc:'Short-form editing in Final Cut Pro.',         loc:'Malaysia · Remote' },
-    { type:'work', org:'applywise.io',            role:'Marketing Specialist',           year:'2024 – 2025', desc:'Instagram marketing & Final Cut Pro edits.',   loc:'Remote' },
+    { type:'work', org:'applywise.io',            role:'Marketing Specialist',           year:'2024 – 2025', desc:'Instagram marketing & Final Cut Pro edits.',   loc:'Lahore' },
     { type:'work', org:'Dentawista Clinic',       role:'Social Media Strategist & Content Creator', year:'2024 – 2025', desc:'Editing, cinematography & content direction.', loc:'Istanbul · On-site' },
-    { type:'work', org:'Nova Studios FZC',        role:'Senior Video Editing Specialist',year:'2025', desc:'Short-form editing & video creation.',         loc:'Remote' },
+    { type:'work', org:'Nova Studios FZC',        role:'Senior Video Editing Specialist',year:'2025', desc:'Short-form editing & video creation.',         loc:'Dubai' },
     { type:'work', org:'MakeAWillOnline',         role:'Marketing & Content Strategist', year:'2025 – Present', desc:'Built the brand\'s full social presence — content, paid ads & motion graphics.', loc:'Brighton, UK' },
     { type:'work', org:'RayCrafts Garage',        role:'Founder',                        year:'2022 – Present', desc:'Filmmaker, editor & creative director.',       loc:'Self-employed' }
   ];
   let ap=0, apTarget=0, aboutRAF=null, pathLen=0, armed=false, lineX0=0, lineX1=1, isMobileAbout=false, photoLit=false, songWasLit=false;
+  let panX=0, panMax=0, dragging=false, dragStartX=0, dragStartPan=0, aboutW=0;
   const N=story.length;
 
   function buildAbout(){
     const stage=document.getElementById('aboutStage');
     const W=stage.clientWidth, H=stage.clientHeight;
     isMobileAbout = innerWidth<=768;
-    const track=document.getElementById('aboutTrack'); track.style.transform='none'; track.style.width='100%';
+    aboutW = W;
+    const track=document.getElementById('aboutTrack');
+    document.getElementById('aboutPrompt').textContent = isMobileAbout
+      ? 'Swipe right to walk the journey →' : 'Drag across the line to reveal the journey →';
 
-    // figure (walking cutout) lives at the far right end
-    const figH = Math.min(isMobileAbout ? H*0.84 : H*0.92, isMobileAbout?320:470);
+    // figure (walking cutout) lives at the far end
+    const figH = Math.min(isMobileAbout ? H*0.80 : H*0.92, isMobileAbout?300:470);
     const figW = figH/2.723;
     const photoHalf = figW/2;
+
+    if(isMobileAbout){ buildAboutMobile(W,H,track,figH,figW,photoHalf); return; }
+    track.style.transform='none'; track.style.width='100%';
     // full-width line, edge to edge (no horizontal scroll, nothing cut)
     const padL = isMobileAbout?44:74;
     const padR = photoHalf + (isMobileAbout?22:40);
@@ -1229,6 +1237,88 @@
     applyAbout();
   }
 
+  function buildAboutMobile(W,H,track,figH,figW,photoHalf){
+    const startX = 46;
+    const step = Math.max(152, (W-80)/3.0);            // spread out, ~3 visible per screen
+    const figGap = 132;
+    const mx = i => startX + (i+1)*step;
+    const figureX = mx(N-1) + figGap;
+    const trackW = Math.max(W, figureX + photoHalf + 28);
+    const midY = H*0.66, amp = 14;                      // line sits low so cards have room above
+    const yAt = x => midY + amp*Math.sin((x/trackW)*Math.PI*3);
+    const xS = startX-12, xE = figureX;
+    let d='M '+xS.toFixed(1)+' '+yAt(xS).toFixed(1);
+    const segs=120;
+    for(let i=1;i<=segs;i++){ const x=xS+(xE-xS)*(i/segs); d+=' L '+x.toFixed(1)+' '+yAt(x).toFixed(1); }
+    const svg=document.getElementById('aboutSvg');
+    svg.setAttribute('viewBox',`0 0 ${trackW} ${H}`); svg.style.width=trackW+'px'; svg.style.height=H+'px';
+    const base=document.getElementById('lineBase'), trail=document.getElementById('lineTrail');
+    base.setAttribute('d',d); trail.setAttribute('d',d);
+    pathLen=trail.getTotalLength(); trail.style.strokeDasharray=pathLen; trail.style.strokeDashoffset=pathLen;
+    track.style.width=trackW+'px'; track.style.transform='translateX(0)';
+
+    const nodesEl=document.getElementById('aboutNodes'); nodesEl.innerHTML='';
+    const sm=document.createElement('div'); sm.className='node start'; sm.id='aboutStartNode';
+    sm.style.left=startX+'px'; sm.style.top=yAt(startX)+'px';
+    sm.innerHTML='<span class="node-dot"></span><span class="start-lab">Start →</span>';
+    nodesEl.appendChild(sm);
+    story.forEach((s,i)=>{
+      const x=mx(i), y=yAt(x);
+      const card=document.createElement('div');
+      card.className='node above '+(s.type==='edu'?'edu':'work');   // all ABOVE the line on mobile
+      card.style.left=x+'px'; card.style.top=y+'px';
+      card.innerHTML=`<span class="node-dot"></span>
+        <div class="node-card">${s.badge?`<span class="node-badge">${s.badge}</span>`:''}
+          ${s.year?`<div class="node-year">${s.year}</div>`:''}
+          <div class="node-org">${s.org}</div>
+          <div class="node-role">${s.role}</div>
+          ${s.desc?`<div class="node-desc">${s.desc}</div>`:''}
+          ${s.loc?`<div class="node-loc">${s.loc}</div>`:''}
+        </div>`;
+      nodesEl.appendChild(card);
+    });
+    const ph=document.createElement('div'); ph.className='node photo'; ph.dataset.t=1;
+    ph.style.left=figureX+'px'; ph.style.top=yAt(figureX)+'px';
+    ph.innerHTML=`<div class="about-figure" id="aboutPhoto" style="width:${figW.toFixed(0)}px;height:${figH.toFixed(0)}px;">
+        <div class="fig-burst"></div>
+        <img class="fig-img" src="${RAY_CUTOUT}" alt="Rayyan Ali" draggable="false">
+        <span class="fig-name">Rayyan Ali</span>
+      </div>`;
+    nodesEl.appendChild(ph);
+
+    panX=0; panMax=Math.max(0, trackW - W); dragging=false;
+    applyMobileAbout();
+  }
+
+  function applyMobileAbout(){
+    const track=document.getElementById('aboutTrack');
+    track.style.transform=`translateX(${panX}px)`;
+    const prog = panMax>0 ? clamp(-panX/panMax,0,1) : 0;
+    const trail=document.getElementById('lineTrail');
+    if(trail) trail.style.strokeDashoffset=(pathLen*(1-prog)).toFixed(1);
+    document.querySelectorAll('#aboutNodes .node').forEach(n=>{
+      if(n.classList.contains('start')){ n.classList.toggle('started', prog>0.01); return; }
+      if(n.classList.contains('photo')) return;
+      const nx=parseFloat(n.style.left)||0;
+      if(nx + panX < aboutW*0.74) n.classList.add('on');     // pops up as it enters from the right
+    });
+    const lit = prog>=0.9;
+    const photo=document.getElementById('aboutPhoto');
+    if(photo) photo.classList.toggle('lit', lit);
+    document.getElementById('aboutStage').classList.toggle('figlit', lit);
+    const song=document.getElementById('storySong');
+    if(song){
+      if(lit && !songWasLit){ try{ song.currentTime=0; song.play(); }catch(e){} }
+      else if(!lit && songWasLit){ song.pause(); }
+      songWasLit=lit;
+    }
+  }
+
+  function aboutGetX(e){ return e.clientX!=null ? e.clientX : (e.touches&&e.touches[0]?e.touches[0].clientX:0); }
+  function aboutDragStart(e){ if(!isMobileAbout) return; dragging=true; dragStartX=aboutGetX(e); dragStartPan=panX; document.getElementById('aboutPrompt').classList.add('gone'); }
+  function aboutDragMove(e){ if(!isMobileAbout||!dragging) return; const dx=aboutGetX(e)-dragStartX; panX=clamp(dragStartPan+dx, -panMax, 0); applyMobileAbout(); }
+  function aboutDragEnd(){ dragging=false; }
+
   function applyAbout(){
     const trail=document.getElementById('lineTrail');
     if(trail) trail.style.strokeDashoffset=(pathLen*(1-ap)).toFixed(1);
@@ -1275,7 +1365,7 @@
   function openAbout(){
     const ov=document.getElementById('aboutOverlay');
     ov.classList.remove('closing'); ov.classList.add('open'); document.body.classList.add('lock');
-    ap=0; apTarget=0; armed=false; photoLit=false; document.getElementById('aboutPrompt').classList.remove('gone');
+    ap=0; apTarget=0; armed=false; photoLit=false; panX=0; dragging=false; document.getElementById('aboutPrompt').classList.remove('gone');
     requestAnimationFrame(()=>{ buildAbout(); });
   }
   function closeAbout(){
@@ -1286,10 +1376,12 @@
   }
   (function(){
     const stage=document.getElementById('aboutStage');
-    stage.addEventListener('pointermove', aboutPointer);
-    stage.addEventListener('pointerdown', aboutPointer);
+    stage.addEventListener('pointerdown', e=>{ if(isMobileAbout) aboutDragStart(e); else aboutPointer(e); });
+    stage.addEventListener('pointermove', e=>{ if(isMobileAbout) aboutDragMove(e); else aboutPointer(e); });
+    addEventListener('pointerup', aboutDragEnd);
+    addEventListener('pointercancel', aboutDragEnd);
     addEventListener('keydown', e=>{ if(e.key==='Escape' && document.getElementById('aboutOverlay').classList.contains('open')) closeAbout(); });
-    let rz; addEventListener('resize', ()=>{ if(document.getElementById('aboutOverlay').classList.contains('open')){ clearTimeout(rz); rz=setTimeout(()=>{ armed=false; ap=0; apTarget=0; buildAbout(); },200); } });
+    let rz; addEventListener('resize', ()=>{ if(document.getElementById('aboutOverlay').classList.contains('open')){ clearTimeout(rz); rz=setTimeout(()=>{ armed=false; ap=0; apTarget=0; panX=0; dragging=false; buildAbout(); },200); } });
   })();
 
   /* contact modal */
