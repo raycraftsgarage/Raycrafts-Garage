@@ -14,7 +14,12 @@
 <meta property="og:title" content="RayCrafts Garage — Rayyan Ali" />
 <meta property="og:description" content="Cinematic stories and scroll-stopping visuals for brands and creators." />
 <meta property="og:url" content="https://raycraftsgarage.com/" />
+<meta property="og:site_name" content="RayCrafts Garage" />
+<meta property="og:image" content="https://raycraftsgarage.com/og-cover.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Rayyan Ali — RayCrafts Garage" />
+<meta name="twitter:description" content="Filmmaker, editor and creative director crafting cinematic stories and scroll-stopping content." />
+<meta name="twitter:image" content="https://raycraftsgarage.com/og-cover.jpg" />
 <!-- Favicon (aperture mark on brand red) -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23C9402E'/%3E%3Cg fill='none' stroke='white' stroke-width='5'%3E%3Ccircle cx='50' cy='50' r='28'/%3E%3Cpath d='M50 22 L66 44 L50 50Z M78 50 L62 66 L50 50Z M50 78 L34 56 L50 50Z M22 50 L38 34 L50 50Z' fill='white' stroke='none'/%3E%3C/g%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -574,6 +579,48 @@
   gtag('config', 'G-1B85JG16GR');
 </script>
 <script>try{ if(localStorage.getItem('rc_intro')==='1') document.documentElement.classList.add('intro-seen'); }catch(e){}</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://raycraftsgarage.com/#rayyan",
+      "name": "Rayyan Ali",
+      "url": "https://raycraftsgarage.com/",
+      "image": "https://raycraftsgarage.com/og-cover.jpg",
+      "jobTitle": "Filmmaker, Editor & Creative Director",
+      "email": "mailto:rayyan@raycraftsgarage.com",
+      "worksFor": { "@id": "https://raycraftsgarage.com/#org" },
+      "sameAs": [
+        "https://www.instagram.com/imraycraft03/",
+        "https://www.linkedin.com/in/rayyan-ali-88252b235/"
+      ]
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://raycraftsgarage.com/#org",
+      "name": "RayCrafts Garage",
+      "alternateName": "RayCrafts",
+      "url": "https://raycraftsgarage.com/",
+      "logo": "https://raycraftsgarage.com/og-cover.jpg",
+      "email": "mailto:rayyan@raycraftsgarage.com",
+      "founder": { "@id": "https://raycraftsgarage.com/#rayyan" },
+      "sameAs": [
+        "https://www.instagram.com/imraycraft03/",
+        "https://www.linkedin.com/in/rayyan-ali-88252b235/"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://raycraftsgarage.com/#website",
+      "url": "https://raycraftsgarage.com/",
+      "name": "RayCrafts Garage — Rayyan Ali",
+      "publisher": { "@id": "https://raycraftsgarage.com/#org" }
+    }
+  ]
+}
+</script>
 </head>
 <body>
   <!-- CINEMATIC INTRO (first visit only) -->
@@ -730,8 +777,9 @@
           <div class="foot-row">
             <span class="logo-img foot-logo" aria-label="RayCrafts Garage"></span>
             <div style="display:flex; gap:24px; flex-wrap:wrap;">
-              <a href="https://www.instagram.com/imraycraft03/" target="_blank" rel="noopener">Instagram</a>
-              <a href="https://www.linkedin.com/in/YOUR-LINKEDIN/" target="_blank" rel="noopener">LinkedIn</a>
+              <a href="https://www.instagram.com/imraycraft03/" target="_blank" rel="noopener" onclick="track('click_instagram')">Instagram</a>
+              <a href="https://www.linkedin.com/in/rayyan-ali-88252b235/" target="_blank" rel="noopener" onclick="track('click_linkedin')">LinkedIn</a>
+              <a href="mailto:rayyan@raycraftsgarage.com" onclick="track('click_email')">Email</a>
               <a href="#" onclick="openContact();return false;">Contact</a>
               <a href="#" onclick="openPortfolio();return false;">Portfolio</a>
             </div>
@@ -1153,7 +1201,7 @@
 
   renderTabs(); renderGrid();
 
-  function openPortfolio(){ document.getElementById('portfolio').classList.add('open'); document.body.classList.add('lock'); }
+  function openPortfolio(){ track('open_portfolio'); document.getElementById('portfolio').classList.add('open'); document.body.classList.add('lock'); }
   function closePortfolio(){ document.getElementById('portfolio').classList.remove('open'); document.body.classList.remove('lock'); }
 
   /* ——— About / My Story ——— */
@@ -1368,6 +1416,7 @@
     aboutRAFstart();
   }
   function openAbout(){
+    track('open_story');
     const ov=document.getElementById('aboutOverlay');
     ov.classList.remove('closing'); ov.classList.add('open'); document.body.classList.add('lock');
     ap=0; apTarget=0; armed=false; photoLit=false; panX=0; dragging=false; document.getElementById('aboutPrompt').classList.remove('gone');
@@ -1390,7 +1439,7 @@
   })();
 
   /* contact modal */
-  function openContact(){ cmShow('choose'); document.getElementById('contactModal').classList.add('open'); document.body.classList.add('lock'); }
+  function openContact(){ track('open_contact'); cmShow('choose'); document.getElementById('contactModal').classList.add('open'); document.body.classList.add('lock'); }
   function closeContact(){ document.getElementById('contactModal').classList.remove('open'); document.body.classList.remove('lock'); }
   function cmShow(view){
     ['cmChoose','cmBook','cmMsg'].forEach(id=>document.getElementById(id).hidden = true);
@@ -1401,7 +1450,7 @@
   /* legal modals */
   const legalDocs = {
     privacy: `<h3>Privacy Policy</h3><div class="upd">Last updated: June 2026</div>
-      <p>This site (raycraftsgarage.com) is operated by Rayyan Ali, trading as RayCrafts Garage. This policy explains what personal data is collected and how it is used. Questions? Email <a href="mailto:raycrafft@gmail.com">raycrafft@gmail.com</a>.</p>
+      <p>This site (raycraftsgarage.com) is operated by Rayyan Ali, trading as RayCrafts Garage. This policy explains what personal data is collected and how it is used. Questions? Email <a href="mailto:rayyan@raycraftsgarage.com">rayyan@raycraftsgarage.com</a>.</p>
       <h4>What I collect</h4>
       <p>• Contact form: your name, email address and message, so I can reply to your enquiry.<br>• Bookings: when you book a call, scheduling details are handled by Google Calendar.<br>• Analytics: anonymous usage data (pages viewed, approximate location, how you reached the site) via Google Analytics — only if you accept cookies.</p>
       <h4>Why I use it</h4>
@@ -1409,7 +1458,7 @@
       <h4>Who processes it</h4>
       <p>Trusted third parties help run this site: Netlify (hosting and form delivery), Google (Analytics and Calendar). Your data is handled under their respective privacy terms.</p>
       <h4>Your rights</h4>
-      <p>Under UK GDPR you can request access to, correction of, or deletion of your personal data at any time. Email <a href="mailto:raycrafft@gmail.com">raycrafft@gmail.com</a> and I'll action it.</p>
+      <p>Under UK GDPR you can request access to, correction of, or deletion of your personal data at any time. Email <a href="mailto:rayyan@raycraftsgarage.com">rayyan@raycraftsgarage.com</a> and I'll action it.</p>
       <h4>Retention</h4>
       <p>Enquiry emails are kept only as long as needed to handle your request. Analytics data is retained per Google's standard settings.</p>
       <p class="disclaimer">This is a general policy provided as a starting template, not legal advice. For commercial or payment activity, consider a professional review.</p>`,
@@ -1481,7 +1530,7 @@
       <div class="cm-view" id="cmMsg" hidden>
         <button class="cm-back" onclick="cmShow('choose')">‹ Back</button>
         <h3 class="cm-title">Send a message</h3>
-        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="contact-form">
+        <form id="contactForm" name="contact" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" class="contact-form">
           <input type="hidden" name="form-name" value="contact" />
           <p class="hidden-field"><label>Don't fill this out: <input name="bot-field" /></label></p>
           <div class="field-row">
@@ -1491,6 +1540,10 @@
           <textarea name="message" rows="4" placeholder="Tell me about your project…" required></textarea>
           <button type="submit" class="btn">Send message</button>
         </form>
+        <div class="cm-thanks" id="contactThanks" hidden>
+          <h3 class="cm-title">Message sent ✓</h3>
+          <p style="text-align:center;color:var(--ink-dim);font-size:.95rem;line-height:1.6;">Thanks — your message is on its way. I'll get back to you soon.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -1547,5 +1600,32 @@
       setTimeout(endIntro, reduce ? 750 : 2150);
     })();
   </script>
+<script>
+  // lightweight GA4 event helper (safe if gtag not yet loaded / consent denied)
+  function track(name, params){ try{ if(window.gtag) gtag('event', name, params||{}); }catch(e){} }
+  (function(){
+    var f=document.getElementById('contactForm');
+    if(!f) return;
+    f.addEventListener('submit', function(e){
+      e.preventDefault();
+      var btn=f.querySelector('button[type="submit"]');
+      var orig=btn?btn.textContent:'';
+      if(btn){ btn.disabled=true; btn.textContent='Sending…'; }
+      var body=new URLSearchParams(new FormData(f)).toString();
+      fetch('/', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:body })
+        .then(function(r){
+          if(!r.ok) throw new Error('status '+r.status);
+          track('generate_lead', { method:'contact_form' });
+          f.hidden=true;
+          var t=document.getElementById('contactThanks'); if(t) t.hidden=false;
+        })
+        .catch(function(err){
+          if(btn){ btn.disabled=false; btn.textContent=orig; }
+          alert("Sorry — the message couldn't send just now. You can email me directly at rayyan@raycraftsgarage.com.");
+          console.error('Contact form submit failed:', err);
+        });
+    });
+  })();
+</script>
 </body>
 </html>
