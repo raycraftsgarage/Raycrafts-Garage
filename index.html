@@ -21,7 +21,8 @@
 <meta name="twitter:description" content="Filmmaker, editor and creative director crafting cinematic stories and scroll-stopping content." />
 <meta name="twitter:image" content="https://raycraftsgarage.com/og-cover.jpg" />
 <!-- Favicon (aperture mark on brand red) -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23C9402E'/%3E%3Cg fill='none' stroke='white' stroke-width='5'%3E%3Ccircle cx='50' cy='50' r='28'/%3E%3Cpath d='M50 22 L66 44 L50 50Z M78 50 L62 66 L50 50Z M50 78 L34 56 L50 50Z M22 50 L38 34 L50 50Z' fill='white' stroke='none'/%3E%3C/g%3E%3C/svg%3E" />
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -48,33 +49,14 @@
   *{ margin:0; padding:0; box-sizing:border-box; }
   html{ scroll-behavior:smooth; }
 
-  /*,—, cinematic intro (clean aperture reveal),—, */
+  /* cinematic intro: the same aperture shutter that lives in the background */
   .intro-seen #intro{ display:none !important; }
   body.intro-active{ overflow:hidden; }
-  @property --introHole{ syntax:'<length-percentage>'; inherits:false; initial-value:0%; }
-  #intro{ position:fixed; inset:0; z-index:9999; display:grid; place-items:center; overflow:hidden;
-    background:
-      radial-gradient(58% 58% at 50% 44%, rgba(110,26,18,.55), transparent 72%),
-      #120406;
-    -webkit-mask:radial-gradient(circle at 50% 50%, transparent var(--introHole), #000 calc(var(--introHole) + .6%));
-            mask:radial-gradient(circle at 50% 50%, transparent var(--introHole), #000 calc(var(--introHole) + .6%)); }
-  #intro.done{ animation:introReveal 1s cubic-bezier(.62,0,.24,1) forwards; }
-  @keyframes introReveal{ 0%{ --introHole:0%; opacity:1; } 72%{ opacity:1; } 100%{ --introHole:155%; opacity:0; } }
-  .intro-core{ position:relative; z-index:3; display:grid; place-items:center; }
-  .intro-ring{ position:absolute; width:min(340px,64vw); height:min(340px,64vw); z-index:2; overflow:visible; }
-  .intro-ring .ir-o{ fill:none; stroke:var(--accent); stroke-opacity:.9; stroke-width:1.2;
-    stroke-dasharray:289; stroke-dashoffset:289; animation:irDraw 1.05s ease .15s forwards; }
-  @keyframes irDraw{ to{ stroke-dashoffset:0; } }
-  .intro-ring .ir-tick{ stroke:var(--ink); stroke-opacity:.4; stroke-width:1.3; stroke-linecap:round;
-    opacity:0; animation:irTick .5s ease .75s forwards; }
-  @keyframes irTick{ to{ opacity:1; } }
+  #intro{ position:fixed; inset:0; z-index:9999; display:grid; place-items:center; overflow:hidden; }
+  .intro-iris{ position:absolute; inset:0; width:100%; height:100%; z-index:1; display:block; }
   .intro-logo{ position:relative; z-index:4; width:min(300px,58vw); height:82px;
-    background:var(--logo) center/contain no-repeat; opacity:0; transform:scale(.95);
-    animation:introLogo 1.7s cubic-bezier(.2,.7,.2,1) .35s forwards; }
-  @keyframes introLogo{ 0%{opacity:0; transform:scale(.95);}
-    24%{opacity:1; transform:scale(1);}
-    80%{opacity:1; transform:scale(1);}
-    100%{opacity:0; transform:scale(1.03);} }
+    background:var(--logo) center/contain no-repeat; opacity:0; transform:scale(.97);
+    will-change:opacity, transform; }
   .intro-skip{ position:absolute; bottom:34px; right:34px; z-index:6; background:rgba(255,255,255,.06);
     border:1px solid rgba(255,255,255,.18); color:rgba(255,255,255,.7); font-family:var(--mono);
     font-size:.72rem; letter-spacing:.08em; padding:9px 16px; border-radius:10px; cursor:pointer;
@@ -82,7 +64,7 @@
   .intro-skip:hover{ color:#fff; background:rgba(255,255,255,.12); }
   @keyframes fadeInSkip{ to{ opacity:1; } }
   #intro.reduced{ background:#0c0304; }
-  #intro.reduced .intro-ring{ display:none; }
+  #intro.reduced .intro-logo{ opacity:1; transform:none; }
   #intro.reduced.done{ animation:introFade .5s ease forwards; }
   @keyframes introFade{ to{ opacity:0; visibility:hidden; } }
   #intro.reduced .intro-logo{ animation:introLogoR .6s ease forwards; }
@@ -898,7 +880,7 @@
   gtag('js', new Date());
   gtag('config', 'G-1B85JG16GR');
 </script>
-<script>try{ if(localStorage.getItem('rc_intro')==='1') document.documentElement.classList.add('intro-seen'); }catch(e){}</script>
+<script>try{ if(sessionStorage.getItem('rc_intro')==='1') document.documentElement.classList.add('intro-seen'); }catch(e){}</script>
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -914,16 +896,31 @@
 <body>
   <!-- CINEMATIC INTRO (first visit only) -->
   <div id="intro" aria-hidden="true">
-    <div class="intro-core">
-      <svg class="intro-ring" viewBox="0 0 100 100" aria-hidden="true">
-        <circle class="ir-o" cx="50" cy="50" r="46"/>
-        <g class="ir-tick">
-          <line x1="50" y1="1" x2="50" y2="7"/><line x1="50" y1="93" x2="50" y2="99"/>
-          <line x1="1" y1="50" x2="7" y2="50"/><line x1="93" y1="50" x2="99" y2="50"/>
-        </g>
-      </svg>
-      <div class="intro-logo"></div>
-    </div>
+    <svg class="intro-iris" id="introSvg" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <radialGradient id="introBg" cx="50%" cy="46%" r="70%">
+          <stop offset="0%" stop-color="#3b1011"/>
+          <stop offset="52%" stop-color="#1b0708"/>
+          <stop offset="100%" stop-color="#100405"/>
+        </radialGradient>
+        <filter id="introGlow" x="-120%" y="-120%" width="340%" height="340%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- full-screen cover with the aperture opening punched through it -->
+      <path id="introFill" fill="url(#introBg)" fill-rule="evenodd"></path>
+      <!-- outer bezel rings + ticks, same as the background lens -->
+      <g id="introRings" opacity="0">
+        <circle id="introRingO" fill="none" stroke="#C9402E" stroke-opacity=".34" stroke-width="1.6"/>
+        <circle id="introRingM" fill="none" stroke="#F6F0E8" stroke-opacity=".14" stroke-width="1.4"/>
+        <g id="introTicks" stroke="#F6F0E8" stroke-opacity=".18" stroke-width="2" stroke-linecap="round"></g>
+      </g>
+      <circle id="introRim" fill="none" stroke="#C9402E" stroke-opacity="0" stroke-width="2"></circle>
+      <g id="introSeams" fill="none" stroke="#E0432F" stroke-opacity=".9" stroke-width="2.4"
+         stroke-linecap="round" filter="url(#introGlow)" opacity="0"></g>
+    </svg>
+    <div class="intro-logo" id="introLogo"></div>
     <button class="intro-skip" onclick="window.__endIntro&&window.__endIntro()">Skip ›</button>
   </div>
 
@@ -2321,20 +2318,115 @@
     (function(){
       const intro=document.getElementById('intro');
       if(!intro) return;
-      let seen=null; try{ seen=localStorage.getItem('rc_intro'); }catch(e){}
+      let seen=null; try{ seen=sessionStorage.getItem('rc_intro'); }catch(e){}
       if(seen==='1'){ intro.remove(); return; }
       document.body.classList.add('intro-active');
       const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if(reduce){ intro.classList.add('reduced'); }
-      let ended=false;
-      function endIntro(){
-        if(ended) return; ended=true;
-        intro.classList.add('done');
-        try{ localStorage.setItem('rc_intro','1'); }catch(e){}
-        setTimeout(()=>{ intro.remove(); document.body.classList.remove('intro-active'); }, 1050);
+
+      const svg  =document.getElementById('introSvg'),
+            fill =document.getElementById('introFill'),
+            seams=document.getElementById('introSeams'),
+            rim  =document.getElementById('introRim'),
+            rings=document.getElementById('introRings'),
+            ringO=document.getElementById('introRingO'),
+            ringM=document.getElementById('introRingM'),
+            ticks=document.getElementById('introTicks'),
+            logo =document.getElementById('introLogo');
+
+      /* the SVG maps 1:1 to pixels, so the aperture is sized in vmin exactly like the
+         background lens (74vmin across) instead of being blown up to cover the screen */
+      const N=8, SLANT=32;
+      let W=0,H=0,CX=0,CY=0,RIM=0,MAXR=0,CIRC=0;
+      function layout(){
+        W=window.innerWidth; H=window.innerHeight; CX=W/2; CY=H/2;
+        svg.setAttribute('viewBox','0 0 '+W+' '+H);
+        RIM = 0.37*Math.min(W,H);                       // matches the background lens radius
+        MAXR = Math.sqrt(W*W+H*H)/2 + 60;               // enough to clear the corners
+        CIRC = 2*Math.PI*RIM;
+        rim.setAttribute('cx',CX); rim.setAttribute('cy',CY); rim.setAttribute('r',RIM.toFixed(1));
+        rim.setAttribute('stroke-dasharray',CIRC.toFixed(1));
+        ringO.setAttribute('cx',CX); ringO.setAttribute('cy',CY); ringO.setAttribute('r',(RIM*95/84).toFixed(1));
+        ringM.setAttribute('cx',CX); ringM.setAttribute('cy',CY); ringM.setAttribute('r',(RIM*90/84).toFixed(1));
+        const t1=RIM*1.19, t2=RIM*1.10; let tk='';
+        [[0,-1],[0,1],[-1,0],[1,0]].forEach(function(d){
+          tk+='<line x1="'+(CX+d[0]*t1).toFixed(1)+'" y1="'+(CY+d[1]*t1).toFixed(1)
+             +'" x2="'+(CX+d[0]*t2).toFixed(1)+'" y2="'+(CY+d[1]*t2).toFixed(1)+'"/>';
+        });
+        ticks.innerHTML=tk;
       }
-      window.__endIntro=endIntro;
-      setTimeout(endIntro, reduce ? 750 : 2150);
+      function octa(r,rot){
+        let d='';
+        for(let k=0;k<N;k++){ const a=(k*(360/N)+rot)*Math.PI/180;
+          d+=(k===0?'M ':'L ')+(CX+r*Math.cos(a)).toFixed(1)+' '+(CY+r*Math.sin(a)).toFixed(1)+' '; }
+        return d+'Z';
+      }
+      /* rOpen = the visible central octagon (drawn), rHole = the actual opening cut through the
+         cover. While the shutter is shut rHole stays 0, so you see the octagon without the page
+         showing through it; opening the shutter grows them together. */
+      function draw(rOpen,rHole,rot,seamOp,rimOp,ringOp){
+        fill.setAttribute('d','M0 0 H'+W+' V'+H+' H0 Z '+octa(rHole,rot));   // evenodd => a real hole
+        rim.setAttribute('stroke-opacity',rimOp.toFixed(3));
+        rings.setAttribute('opacity',ringOp.toFixed(3));
+        if(seamOp<=0.01 || rOpen>=RIM-2){ seams.setAttribute('opacity','0'); return; }
+        seams.setAttribute('opacity',seamOp.toFixed(3));
+        let out='<path d="'+octa(rOpen,rot)+'"/>';          // the central octagon itself
+        for(let k=0;k<N;k++){
+          const aR=(k*45+rot+SLANT)*Math.PI/180, aI=(k*45+rot)*Math.PI/180;
+          out+='<line x1="'+(CX+RIM*Math.cos(aR)).toFixed(1)+'" y1="'+(CY+RIM*Math.sin(aR)).toFixed(1)
+             +'" x2="'+(CX+rOpen*Math.cos(aI)).toFixed(1)+'" y2="'+(CY+rOpen*Math.sin(aI)).toFixed(1)+'"/>';
+        }
+        seams.innerHTML=out;
+      }
+      const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+      const easeOut=t=>1-Math.pow(1-t,3);
+      const easeInOut=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+
+      function finish(){
+        try{ sessionStorage.setItem('rc_intro','1'); }catch(e){}
+        intro.remove(); document.body.classList.remove('intro-active');
+      }
+
+      layout();
+      addEventListener('resize', layout, {passive:true});
+
+      if(reduce){
+        intro.classList.add('reduced');
+        draw(RIM*0.48,0,0,.9,.6,.85);
+        window.__endIntro=function(){ intro.classList.add('done'); setTimeout(finish,520); };
+        setTimeout(window.__endIntro, 800);
+        return;
+      }
+
+      const FORM=520, HOLD=1080, OPEN=720;
+      let t0=performance.now(), opening=false, openAt=0, raf=0;
+
+      function frame(now){
+        const t=now-t0, hole0=RIM*0.48;
+        if(!opening){
+          /* the shutter FORMS: bezel rings appear, rim draws itself in, blades fade up */
+          const f=clamp(t/FORM,0,1);
+          rim.setAttribute('stroke-dashoffset',(CIRC*(1-easeOut(f))).toFixed(1));
+          const lg=clamp((t-160)/420,0,1);
+          logo.style.opacity=lg.toFixed(3);
+          logo.style.transform='scale('+(0.97+0.03*lg).toFixed(3)+')';
+          draw(hole0, 0, t*0.004, clamp((t-200)/340,0,1)*0.95, 0.6*f, 0.85*clamp(t/380,0,1));
+          if(t>=HOLD){ opening=true; openAt=now; }
+        } else {
+          /* the shutter OPENS: blades retract and rotate, revealing the site through the aperture */
+          const k=clamp((now-openAt)/OPEN,0,1), e=easeInOut(k);
+          const r=hole0+e*(MAXR-hole0);
+          draw(r, r, t*0.004+e*58,
+               0.95*(1-clamp(k*1.5,0,1)), 0.6*(1-clamp(k*1.7,0,1)), 0.85*(1-clamp(k*1.7,0,1)));
+          logo.style.opacity=(1-clamp(k*2.3,0,1)).toFixed(3);
+          logo.style.transform='scale('+(1+e*0.16).toFixed(3)+')';
+          if(k>=1){ cancelAnimationFrame(raf); finish(); return; }
+        }
+        raf=requestAnimationFrame(frame);
+      }
+
+      window.__endIntro=function(){ if(!opening){ opening=true; openAt=performance.now(); } };
+      draw(RIM*0.48,0,0,0,0,0);
+      raf=requestAnimationFrame(frame);
     })();
   </script>
 <script>
