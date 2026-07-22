@@ -820,22 +820,6 @@
   .pbtn{ width:46%; height:46%; display:block; }
   .pbtn path{ fill:var(--accent-bright); filter:drop-shadow(0 1px 3px rgba(0,0,0,.45)); }
 
-  /*,—, blog / post reader,—, */
-  .post-panel{ width:min(760px,94vw); max-height:88vh; overflow-y:auto; text-align:left; }
-  .post-cat{ font-family:var(--mono); font-size:.7rem; letter-spacing:.22em; text-transform:uppercase;
-    color:var(--accent-bright); margin-bottom:12px; }
-  .post-title{ font-family:var(--display); font-weight:700; font-size:clamp(1.4rem,3.4vw,1.9rem);
-    line-height:1.14; color:var(--cream); margin:0 0 12px; letter-spacing:-.01em; }
-  .post-meta{ font-family:var(--mono); font-size:.72rem; color:var(--ink-dim);
-    margin-bottom:22px; padding-bottom:18px; border-bottom:1px solid var(--line); }
-  .post-body{ color:var(--ink); font-size:.98rem; line-height:1.72; }
-  .post-body p{ margin:0 0 16px; }
-  .post-body h4{ font-family:var(--display); font-weight:700; font-size:1.14rem; color:var(--cream);
-    margin:26px 0 10px; letter-spacing:-.01em; }
-  .post-body em{ color:var(--ink-dim); }
-  .post-note{ margin-top:24px; padding:12px 16px; border-radius:12px; border:1px dashed var(--line);
-    font-family:var(--mono); font-size:.72rem; color:var(--ink-dim); }
-
   /* ——— hover: slight vertical lift only (magnetic tilt removed) ——— */
   .svc-card, .blog-card, .cs-metric, .cs-res, .testi-card{
     transition:transform .26s cubic-bezier(.2,.7,.2,1), border-color .3s, background .3s; }
@@ -879,6 +863,14 @@
   gtag('consent', 'default', { 'analytics_storage': 'denied', 'ad_storage': 'denied' });
   gtag('js', new Date());
   gtag('config', 'G-1B85JG16GR');
+</script>
+<!-- Microsoft Clarity (session replay + click heatmaps) -->
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "xqd6n1wsru");
 </script>
 <script>try{ if(sessionStorage.getItem('rc_intro')==='1') document.documentElement.classList.add('intro-seen'); }catch(e){}</script>
 <script type="application/ld+json">
@@ -2110,60 +2102,6 @@
   function closeWeb(){ document.getElementById('webModal').classList.remove('open'); document.body.classList.remove('lock'); }
   addEventListener('keydown',e=>{ if(e.key==='Escape') closeWeb(); });
 
-  /*,—, blog / insights reader (placeholder copy, swap in the real posts later),—, */
-  const POSTS = {
-    hook: {
-      cat:'Short-form', title:'The anatomy of a scroll-stopping hook', meta:'5 min read · Draft',
-      body:`
-        <p>The first two seconds of a short-form video decide whether it lives or dies. Before a single word of your message lands, the viewer has already made a subconscious call: keep watching, or keep scrolling. Everything else you shot is downstream of that decision.</p>
-        <h4>Say the stakes, not the setup</h4>
-        <p>Most hooks fail because they warm up. They introduce, they contextualise, they clear their throat. A strong hook skips all of that and opens on the tension, the promise, the problem, or the pattern-break that makes stopping feel involuntary.</p>
-        <h4>Show motion in frame one</h4>
-        <p>A static opening frame reads as a photo, and photos get scrolled. Movement, a gesture, a cut, a camera push, signals that something is happening and rewards the eye for staying. Pair that motion with a caption that raises a question the viewer needs answered.</p>
-        <h4>Earn the next line</h4>
-        <p>Retention is a chain: every line exists to buy the next one. Once the hook lands, the job becomes keeping the momentum without deflating it. Cut the dead air, hold the pace, and never explain what you can show.</p>
-        <p class="post-note">Placeholder article, final copy to be added.</p>`
-    },
-    legal: {
-      cat:'Case notes', title:'How I grew a legal brand from zero to millions of views', meta:'6 min read · Draft',
-      body:`
-        <p>When I started building the content engine for a legal brand, there was no audience, no format, and no proof that short-form even worked in a category as dry as wills and estate planning. A few months later the numbers told a different story.</p>
-        <h4>Trust is the whole product</h4>
-        <p>In legal, people are not buying a video, they are deciding whether to trust you with something they would rather not think about. That reframed every creative choice: clarity over cleverness, calm over hype, and a face people could believe.</p>
-        <h4>Find the format, then repeat it</h4>
-        <p>Growth did not come from constant reinvention. It came from finding a handful of formats that consistently earned attention and then running them until the data said stop. Consistency compounds in a way that novelty rarely does.</p>
-        <h4>What I would do differently</h4>
-        <p>I would commit to a posting rhythm sooner and resist the urge to over-produce early videos. Volume and iteration taught me more than any single polished piece ever did.</p>
-        <p class="post-note">Placeholder article, final copy to be added.</p>`
-    },
-    founder: {
-      cat:'Strategy', title:'Why founder-led video beats polished ads', meta:'4 min read · Draft',
-      body:`
-        <p>Audiences have quietly developed an immune system for advertising. The moment something looks like an ad, attention drops. Founder-led video slips under that defence because it does not feel like marketing, it feels like a person.</p>
-        <h4>Faces build trust that logos cannot</h4>
-        <p>People follow people. A recognisable face, an honest tone, and a point of view create a relationship a brand logo simply cannot. That relationship is what turns a passive viewer into someone who actually cares what you launch next.</p>
-        <h4>Imperfect is persuasive</h4>
-        <p>Over-polished content signals budget, and budget signals "sell". Slightly raw, direct-to-camera content signals honesty. The goal is not low quality, it is low pretence.</p>
-        <h4>Where polish still belongs</h4>
-        <p>None of this means production value is dead. It means leading with the human and letting craft support the message rather than replace it. The best content often looks the least corporate on purpose.</p>
-        <p class="post-note">Placeholder article, final copy to be added.</p>`
-    }
-  };
-  function openPost(id){
-    const post = POSTS[id]; if(!post) return;
-    document.getElementById('postCat').textContent  = post.cat;
-    document.getElementById('postTitle').textContent = post.title;
-    document.getElementById('postMeta').textContent  = post.meta;
-    document.getElementById('postBody').innerHTML     = post.body;
-    document.getElementById('blogModal').classList.add('open');
-    document.body.classList.add('lock');
-    document.querySelector('#blogModal .cm-panel').scrollTop = 0;
-    if(window.track) track('open_post_'+id);
-  }
-  function closePost(){
-    document.getElementById('blogModal').classList.remove('open');
-    document.body.classList.remove('lock');
-  }
   /* expandable skills & toolkit */
   function toggleCase(btn){
     const panel=document.getElementById('csPanel');
@@ -2176,7 +2114,6 @@
     const open=panel.classList.toggle('open');
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
-  addEventListener('keydown', e=>{ if(e.key==='Escape') closePost(); });
   addEventListener('keydown',e=>{ if(e.key==='Escape') closeLegal(); });
   addEventListener('keydown',e=>{ if(e.key==='Escape') closePortfolio(); });
 </script>
@@ -2240,18 +2177,6 @@
       <button class="cm-close" onclick="closeLegal()" aria-label="Close">✕</button>
       <div class="legal-body" id="legalBody"></div>
     </div>
-  </div>
-
-  <!-- BLOG / POST READER MODAL -->
-  <div class="cmodal" id="blogModal">
-    <div class="cm-backdrop" onclick="closePost()"></div>
-    <article class="cm-panel glass post-panel">
-      <button class="cm-close" onclick="closePost()" aria-label="Close">✕</button>
-      <div class="post-cat" id="postCat"></div>
-      <h3 class="post-title" id="postTitle"></h3>
-      <div class="post-meta" id="postMeta"></div>
-      <div class="post-body" id="postBody"></div>
-    </article>
   </div>
 
   <!-- WEBSITE / WEB-DESIGN MODAL -->
@@ -2430,7 +2355,32 @@
     })();
   </script>
 <script>
-  function track(name, params){ try{ if(window.gtag) gtag('event', name, params||{}); }catch(e){} }
+  function track(name, params){
+    try{ if(window.gtag) gtag('event', name, params||{}); }catch(e){}
+    try{ if(window.clarity) clarity('event', name); }catch(e){}
+  }
+  /* ——— behaviour tracking: one delegated listener catches every meaningful click ——— */
+  (function(){
+    function slug(t){ return (t||'').trim().toLowerCase().replace(/&amp;/g,'and').replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,40); }
+    document.addEventListener('click', function(e){
+      var el;
+      if((el=e.target.closest('.svc-card'))){
+        var h=el.querySelector('h3'); track('click_service', {label: slug(h&&h.textContent)}); return;
+      }
+      if((el=e.target.closest('.blog-card'))){
+        var bh=el.querySelector('h3'); track('click_blog_card', {label: slug(bh&&bh.textContent)}); return;
+      }
+      if((el=e.target.closest('.cs-social'))){
+        var lbl=(el.getAttribute('aria-label')||'').toLowerCase();
+        var net = lbl.indexOf('tiktok')>=0?'tiktok': lbl.indexOf('instagram')>=0?'instagram': lbl.indexOf('youtube')>=0?'youtube':'social';
+        track('click_social_makeawill', {network: net}); return;
+      }
+      if((el=e.target.closest('.tk-toggle'))){ track('toggle_skills'); return; }
+      if((el=e.target.closest('.cs-toggle'))){ track('toggle_casestudy'); return; }
+      if((el=e.target.closest('.pf-item'))){ track('click_portfolio_video'); return; }
+      if((el=e.target.closest('.nav-links a'))){ track('click_nav', {label: slug(el.textContent)}); return; }
+    }, true);
+  })();
   window.track=track;
   (function(){
     var f=document.getElementById('contactForm'); if(!f) return;

@@ -24,6 +24,23 @@
 <meta name="twitter:image" content="https://raycraftsgarage.com/blog/assets/cover-why-founder-led-video-beats-polished-ads.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<!-- Google Analytics 4 (consent defaulted OFF until the visitor accepts) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1B85JG16GR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('consent', 'default', { 'analytics_storage': 'denied', 'ad_storage': 'denied' });
+  gtag('js', new Date());
+  gtag('config', 'G-1B85JG16GR');
+</script>
+<!-- Microsoft Clarity (session replay + click heatmaps) -->
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "xqd6n1wsru");
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -97,6 +114,20 @@
       gap:18px; align-items:center; justify-content:space-between; }
     .back{ font-family:var(--mono); font-size:.78rem; letter-spacing:.06em; color:var(--ink-dim); text-decoration:none; transition:color .2s; }
     .back:hover{ color:var(--ink); }
+
+    /* cookie consent, matches the homepage */
+    .cookie{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%) translateY(160%);
+      width:min(640px,92vw); z-index:200; padding:18px 20px; border-radius:18px;
+      display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:space-between;
+      background:var(--glass-bg); backdrop-filter:blur(22px) saturate(1.5);
+      -webkit-backdrop-filter:blur(22px) saturate(1.5); border:1px solid var(--glass-brd);
+      transition:transform .5s cubic-bezier(.2,.8,.2,1); }
+    .cookie.show{ transform:translateX(-50%) translateY(0); }
+    .cookie p{ color:var(--ink-dim); font-size:.82rem; margin:0; flex:1; min-width:220px; }
+    .cookie p a{ color:var(--accent); }
+    .cookie-btns{ display:flex; gap:10px; }
+    .cookie .btn{ padding:10px 16px; font-size:.72rem; }
+    .cookie .btn.ghost{ background:none; border:1px solid var(--line); color:var(--ink-dim); box-shadow:none; }
 </style>
 </head>
 <body>
@@ -169,5 +200,27 @@
       <a class="btn" href="/#contact">Work with me</a>
     </div>
   </footer>
+
+  <div class="cookie" id="cookieBanner">
+    <p>I use cookies to understand how people find and use this site (via Google Analytics). <a href="/#contact">Privacy</a></p>
+    <div class="cookie-btns">
+      <button class="btn ghost" onclick="cookieChoice(false)">Decline</button>
+      <button class="btn" onclick="cookieChoice(true)">Accept</button>
+    </div>
+  </div>
+  <script>
+    (function(){
+      const banner=document.getElementById('cookieBanner');
+      let saved=null;
+      try{ saved=localStorage.getItem('rc_consent'); }catch(e){}
+      if(saved==='granted'){ if(window.gtag) gtag('consent','update',{analytics_storage:'granted'}); }
+      else if(saved!=='denied'){ setTimeout(function(){ banner.classList.add('show'); }, 1200); }
+      window.cookieChoice=function(accept){
+        try{ localStorage.setItem('rc_consent', accept?'granted':'denied'); }catch(e){}
+        if(accept && window.gtag) gtag('consent','update',{analytics_storage:'granted'});
+        banner.classList.remove('show');
+      };
+    })();
+  </script>
 </body>
 </html>
